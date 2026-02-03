@@ -57,18 +57,23 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   const loadPage = async (page: number) => {
     setLoading(true);
     try {
-      const verses = await engine.quranApi.getPageVerses(page);
+      // Use MushafRebuilder for accurate line-based layout
+      const mushafPage = await engine.mushafRebuilder.rebuildPage(page);
       
-      // Transform verses to match our component's expected format
-      const linesPerPage = 15;
-      const versesWithLines = verses.map((verse, index) => {
-        // Parse surah and ayah from verse_key (e.g., "1:1" -> surah 1, ayah 1)
-        const [surah, ayah] = verse.verse_key.split(':').map(Number);
+      // Transform to component format with proper line numbers from word data
+      const versesWithLines = mushafPage.lines.map(line => {
+        // Get the text for this line by combining all words
+        const lineText = line.words.map(w => w.text_uthmani).join(' ');
+        
+        // Get the first verse key for this line for reference
+        const verseKey = line.verse_keys[0] || '1:1';
+        const [surah, ayah] = verseKey.split(':').map(Number);
+        
         return {
           surah,
           ayah,
-          text: verse.text_uthmani || verse.text_imlaei || '', // Fallback to empty string
-          line: Math.floor((index / verses.length) * linesPerPage) + 1,
+          text: lineText,
+          line: line.line_number,
         };
       });
       
@@ -89,7 +94,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
+    // Set canvas size (standard Mushaf proportions)
     const width = 600;
     const height = 800;
     canvas.width = width * window.devicePixelRatio;
@@ -98,7 +103,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     canvas.style.height = `${height}px`;
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-    // Clear canvas
+    // Clear canvas with Mushaf-like background
     ctx.fillStyle = '#faf9f7';
     ctx.fillRect(0, 0, width, height);
 
@@ -106,22 +111,35 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     ctx.save();
     ctx.scale(zoom, zoom);
 
-    // Draw border
+    // Draw decorative border (golden for traditional Mushaf look)
+    const margin = 40;
+    const innerMargin = 10;
+    
+    // Outer border
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(margin, margin, width - 2 * margin, height - 2 * margin);
+    
+    // Inner border
     ctx.strokeStyle = '#c19a6b';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(40, 40, width - 80, height - 80);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(margin + innerMargin, margin + innerMargin, 
+                   width - 2 * (margin + innerMargin), height - 2 * (margin + innerMargin));
 
-    // Render verses by line
-    const lineHeight = 45;
-    const startY = 80;
-    const startX = width - 80; // RTL - start from right
+    // Calculate text area
+    const textMargin = margin + innerMargin + 10;
+    const textHeight = height - 2 * textMargin;
+    const lineHeight = textHeight / 15; // 15 lines per page
+    const startY = textMargin + 25; // Offset from top
+    const startX = width - textMargin - 5; // RTL - start from right
 
-    // Use the Google Fonts we added
-    ctx.font = '22px "Scheherazade New", "Amiri", "Traditional Arabic", serif';
+    // Configure Arabic text rendering
+    ctx.font = '24px "Scheherazade New", "Amiri", "Traditional Arabic", serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.direction = 'rtl';
 
+    // Group verses by line
     const lineGroups: Map<number, typeof pageData.verses> = new Map();
     pageData.verses.forEach(verse => {
       if (!lineGroups.has(verse.line)) {
@@ -130,35 +148,31 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
       lineGroups.get(verse.line)!.push(verse);
     });
 
-    lineGroups.forEach((verses, lineNum) => {
+    // Sort lines
+    const sortedLines = Array.from(lineGroups.keys()).sort((a, b) => a - b);
+
+    // Render each line
+    sortedLines.forEach((lineNum) => {
+      const verses = lineGroups.get(lineNum)!;
       const y = startY + (lineNum - 1) * lineHeight;
-      let x = startX;
       
-      verses.forEach((verse, idx) => {
-        // Skip if no text
-        if (!verse.text) return;
-        
-        // Draw ayah number in circle
-        if (idx > 0) {
-          ctx.fillText(' ۝ ', x, y);
-          x -= 20;
-        }
-        
-        // Draw verse text with ayah number
-        const ayahLabel = `﴿${verse.ayah}﴾`;
-        ctx.fillText(verse.text + ' ' + ayahLabel, x, y);
-        
-        // Measure text for next position
-        const metrics = ctx.measureText(verse.text + ' ' + ayahLabel);
-        x -= metrics.width + 10;
-      });
+      // Combine all text for this line
+      const lineText = verses.map(v => v.text).join(' ');
+      
+      // Draw the line text
+      if (lineText) {
+        ctx.fillText(lineText, startX, y);
+      }
     });
 
-    // Draw page number at bottom center
+    // Draw page number at bottom center with ornamental styling
     ctx.textAlign = 'center';
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = '#666666';
-    ctx.fillText(`${currentPage}`, width / 2, height - 15);
+    ctx.font = 'bold 16px "Amiri", serif';
+    ctx.fillStyle = '#8b6914';
+    
+    // Draw ornamental brackets around page number
+    const pageNumY = height - margin / 2;
+    ctx.fillText(`﴾ ${currentPage} ﴿`, width / 2, pageNumY);
 
     ctx.restore();
   };

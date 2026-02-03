@@ -73,15 +73,22 @@ const MutashabihatCompare: React.FC<MutashabihatCompareProps> = ({ verse1, verse
       return;
     }
     
-    // TODO: Fetch verse text from QuranApiClient
-    // For now, use placeholder
-    setVerse({
-      surah,
-      ayah,
-      text: 'Verse text will be loaded from API...',
-      page: 1,
-      surahName: `Surah ${surah}`,
-    });
+    try {
+      // Fetch verse text from QuranApiClient
+      const engine = useAppStore.getState().engine;
+      const verse = await engine.quranApi.getVerse(surah, ayah);
+      
+      setVerse({
+        surah,
+        ayah,
+        text: verse.text_uthmani || verse.text_imlaei || '',
+        page: verse.page_number || 1,
+        surahName: `Surah ${surah}`,
+      });
+    } catch (error) {
+      console.error('Error loading verse:', error);
+      alert('Failed to load verse. Please check your connection and try again.');
+    }
   };
 
   const handleCreateFlashcard = () => {

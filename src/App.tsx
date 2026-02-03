@@ -32,6 +32,7 @@ function App() {
   const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
   const setDrawingModeActive = useAppStore((state) => state.setDrawingModeActive);
   const goBack = useAppStore((state) => state.goBack);
+  const goForward = useAppStore((state) => state.goForward);
 
   // Check if Mushaf is configured on first load
   useEffect(() => {
@@ -100,6 +101,13 @@ function App() {
             goBack();
           }
           break;
+        case 'y':
+        case 'Y':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            goForward();
+          }
+          break;
         case ',':
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
@@ -133,7 +141,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isFullscreen, searchResultsPaneOpen, settingsPanelOpen, drawingModeActive, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, setSettingsPanelOpen, setDrawingModeActive, goBack, setAudioPlaying]);
+  }, [currentPage, isFullscreen, searchResultsPaneOpen, settingsPanelOpen, drawingModeActive, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, setSettingsPanelOpen, setDrawingModeActive, goBack, goForward, setAudioPlaying]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {

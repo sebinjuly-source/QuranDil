@@ -77,6 +77,10 @@
   border-color: var(--color-custom-transition);
 }
 
+.flashcard-creator.page-number {
+  border-color: var(--color-page-number);
+}
+
 .flashcard-type-badge {
   display: inline-block;
   padding: 0.5rem 1rem;

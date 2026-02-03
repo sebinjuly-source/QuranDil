@@ -34,7 +34,7 @@ const DeckSelection: React.FC = () => {
         { type: 'mutashabihat', label: 'Mutashabihat', icon: '🟡', color: '#eab308' },
         { type: 'transition', label: 'Transitions', icon: '🔵', color: '#3b82f6' },
         { type: 'custom-transition', label: 'Custom Trans.', icon: '🟣', color: '#a855f7' },
-        { type: 'page-number', label: 'Page Numbers', icon: '⚪', color: '#6b7280' },
+        { type: 'page-number', label: 'Page Numbers', icon: '🟢', color: '#10b981' },
       ];
 
       const deckInfos: DeckInfo[] = await Promise.all(

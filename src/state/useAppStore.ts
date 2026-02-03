@@ -51,6 +51,7 @@ export interface NavigationState {
   panX: number;
   panY: number;
   history: number[];
+  futureHistory: number[];
   isDualPage: boolean;
   isFullscreen: boolean;
 }
@@ -72,6 +73,7 @@ export interface AppState {
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
   goBack: () => void;
+  goForward: () => void;
   toggleDualPage: () => void;
   toggleFullscreen: () => void;
 
@@ -144,6 +146,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     panX: 0,
     panY: 0,
     history: [],
+    futureHistory: [],
     isDualPage: false,
     isFullscreen: false,
   },
@@ -161,11 +164,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     const newHistory = (addToHistory && state.navigation.currentPage !== newPage)
       ? [...state.navigation.history, state.navigation.currentPage].slice(-10)
       : state.navigation.history;
+    
+    // Clear future history when navigating to a new page
+    const clearFuture = addToHistory && state.navigation.currentPage !== newPage;
+    
     return {
       navigation: { 
         ...state.navigation, 
         currentPage: newPage,
-        history: newHistory
+        history: newHistory,
+        futureHistory: clearFuture ? [] : state.navigation.futureHistory
       }
     };
   }),
@@ -185,11 +193,29 @@ export const useAppStore = create<AppState>((set, get) => ({
     const history = [...state.navigation.history];
     const previousPage = history.pop();
     if (previousPage !== undefined) {
+      const futureHistory = [...state.navigation.futureHistory, state.navigation.currentPage].slice(-10);
       return {
         navigation: { 
           ...state.navigation, 
           currentPage: previousPage,
-          history
+          history,
+          futureHistory
+        }
+      };
+    }
+    return state;
+  }),
+  goForward: () => set((state) => {
+    const futureHistory = [...state.navigation.futureHistory];
+    const nextPage = futureHistory.pop();
+    if (nextPage !== undefined) {
+      const history = [...state.navigation.history, state.navigation.currentPage].slice(-10);
+      return {
+        navigation: { 
+          ...state.navigation, 
+          currentPage: nextPage,
+          history,
+          futureHistory
         }
       };
     }
