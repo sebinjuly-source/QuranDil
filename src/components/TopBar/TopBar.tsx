@@ -9,7 +9,6 @@ function TopBar() {
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSettings, setShowSettings] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,11 +57,10 @@ function TopBar() {
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit fullscreen (F11)' : 'Fullscreen (F11)'}
           >
-            {isFullscreen ? '⛶' : '⛶'}
+            {isFullscreen ? '⬜' : '⛶'}
           </button>
           <button
             className="top-bar-btn"
-            onClick={() => setShowSettings(!showSettings)}
             title="Settings"
           >
             ⚙️
