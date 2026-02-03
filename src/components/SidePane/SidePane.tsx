@@ -3,6 +3,7 @@ import { useAppStore } from '../../state/useAppStore';
 import DeckSelection from '../Flashcards/DeckSelection';
 import ReviewSession from '../Flashcards/ReviewSession';
 import SessionStats from '../Flashcards/SessionStats';
+import MutashabihatCompare from '../Mutashabihat/MutashabihatCompare';
 import { SessionStats as SessionStatsType } from '../Flashcards/ReviewSession';
 import { Flashcard } from '../../engines/FlashcardStore';
 import './SidePane.css';
@@ -113,18 +114,7 @@ const SidePane: React.FC = () => {
         );
       
       case 'mutashabihat':
-        return (
-          <div className="sidepane-section">
-            <h2>Mutashabihat Comparison</h2>
-            <p className="help-text">
-              Mutashabihat are similar verses that are easy to confuse.
-              Create flashcards to help distinguish between them.
-            </p>
-            <div className="mutashabihat-list">
-              <p className="empty-state">No mutashabihat pairs created yet</p>
-            </div>
-          </div>
-        );
+        return <MutashabihatCompare />;
       
       default:
         return (
