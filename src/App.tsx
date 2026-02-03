@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from './state/useAppStore';
+import { MUSHAF_CONFIG_KEY } from './constants';
 import TopBar from './components/TopBar/TopBar';
 import LeftPanel from './components/LeftPanel/LeftPanel';
 import MushafViewer from './components/MushafViewer/MushafViewer';
@@ -34,7 +35,7 @@ function App() {
 
   // Check if Mushaf is configured on first load
   useEffect(() => {
-    const config = localStorage.getItem('qurandil-mushaf-config');
+    const config = localStorage.getItem(MUSHAF_CONFIG_KEY);
     if (config) {
       setMushafConfigured(true);
     }

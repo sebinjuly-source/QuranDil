@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MUSHAF_CONFIG_KEY } from '../../constants';
 import './MushafSetupWizard.css';
 
 interface MushafSetupWizardProps {
@@ -13,7 +14,7 @@ interface MushafConfig {
 }
 
 const saveMushafConfig = (config: MushafConfig) => {
-  localStorage.setItem('qurandil-mushaf-config', JSON.stringify(config));
+  localStorage.setItem(MUSHAF_CONFIG_KEY, JSON.stringify(config));
 };
 
 const MushafSetupWizard: React.FC<MushafSetupWizardProps> = ({ onComplete }) => {
@@ -77,10 +78,15 @@ const MushafSetupWizard: React.FC<MushafSetupWizardProps> = ({ onComplete }) => 
         
         {step === 2 && (
           <div className="upload-step">
-            <p>PDF upload feature coming soon!</p>
-            <p>For now, please use the default Mushaf.</p>
+            <h3>📤 Upload Your Mushaf</h3>
+            <p className="info-text">This feature is coming soon!</p>
+            <p className="help-text">
+              We're working on PDF import functionality. In the meantime, 
+              please use the Default Madani Mushaf which provides accurate 
+              page-by-page Quran text from Quran.com API.
+            </p>
             <button className="btn-primary" onClick={() => setStep(1)}>
-              Back
+              Go Back
             </button>
           </div>
         )}
