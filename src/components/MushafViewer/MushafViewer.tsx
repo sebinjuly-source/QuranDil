@@ -145,11 +145,11 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
         }
         
         // Draw verse text with ayah number
-        const ayahNum = `﴿${verse.ayah}﴾`;
-        ctx.fillText(verse.text + ' ' + ayahNum, x, y);
+        const ayahLabel = `﴿${verse.ayah}﴾`;
+        ctx.fillText(verse.text + ' ' + ayahLabel, x, y);
         
         // Measure text for next position
-        const metrics = ctx.measureText(verse.text + ' ' + ayahNum);
+        const metrics = ctx.measureText(verse.text + ' ' + ayahLabel);
         x -= metrics.width + 10;
       });
     });

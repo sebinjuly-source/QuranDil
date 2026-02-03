@@ -5,17 +5,27 @@ interface MushafSetupWizardProps {
   onComplete: () => void;
 }
 
+interface MushafConfig {
+  type: string;
+  name: string;
+  linesPerPage: number;
+  source: string;
+}
+
+const saveMushafConfig = (config: MushafConfig) => {
+  localStorage.setItem('qurandil-mushaf-config', JSON.stringify(config));
+};
+
 const MushafSetupWizard: React.FC<MushafSetupWizardProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
 
   const handleDefaultMushaf = () => {
-    // Use default Madani Mushaf from Quran.com API
-    localStorage.setItem('qurandil-mushaf-config', JSON.stringify({
+    saveMushafConfig({
       type: 'default',
       name: 'Madani 15-Line',
       linesPerPage: 15,
       source: 'quran-api'
-    }));
+    });
     onComplete();
   };
 
@@ -25,6 +35,16 @@ const MushafSetupWizard: React.FC<MushafSetupWizardProps> = ({ onComplete }) => 
 
   const handlePresetMushaf = () => {
     setStep(3);
+  };
+
+  const handleSelectPreset = (name: string) => {
+    saveMushafConfig({
+      type: 'preset',
+      name,
+      linesPerPage: 15,
+      source: 'quran-api'
+    });
+    onComplete();
   };
 
   return (
@@ -69,26 +89,10 @@ const MushafSetupWizard: React.FC<MushafSetupWizardProps> = ({ onComplete }) => 
           <div className="preset-step">
             <h3>Choose a Mushaf Preset</h3>
             <div className="preset-options">
-              <button className="preset-btn" onClick={() => {
-                localStorage.setItem('qurandil-mushaf-config', JSON.stringify({
-                  type: 'preset',
-                  name: 'Indo-Pak',
-                  linesPerPage: 15,
-                  source: 'quran-api'
-                }));
-                onComplete();
-              }}>
+              <button className="preset-btn" onClick={() => handleSelectPreset('Indo-Pak')}>
                 Indo-Pak Mushaf
               </button>
-              <button className="preset-btn" onClick={() => {
-                localStorage.setItem('qurandil-mushaf-config', JSON.stringify({
-                  type: 'preset',
-                  name: 'Warsh',
-                  linesPerPage: 15,
-                  source: 'quran-api'
-                }));
-                onComplete();
-              }}>
+              <button className="preset-btn" onClick={() => handleSelectPreset('Warsh')}>
                 Warsh Mushaf
               </button>
             </div>

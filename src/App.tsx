@@ -13,7 +13,6 @@ import MushafSetupWizard from './components/Setup/MushafSetupWizard';
 import './App.css';
 
 function App() {
-  const [isFirstLaunch, setIsFirstLaunch] = useState(true);
   const [mushafConfigured, setMushafConfigured] = useState(false);
   const theme = useAppStore((state) => state.theme);
   const sidePaneOpen = useAppStore((state) => state.sidePaneOpen);
@@ -38,10 +37,6 @@ function App() {
     const config = localStorage.getItem('qurandil-mushaf-config');
     if (config) {
       setMushafConfigured(true);
-      setIsFirstLaunch(false);
-    } else {
-      setIsFirstLaunch(true);
-      setMushafConfigured(false);
     }
   }, []);
 
@@ -154,13 +149,12 @@ function App() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Show setup wizard if this is first launch
-  if (isFirstLaunch && !mushafConfigured) {
+  // Show setup wizard if Mushaf is not configured
+  if (!mushafConfigured) {
     return (
       <MushafSetupWizard
         onComplete={() => {
           setMushafConfigured(true);
-          setIsFirstLaunch(false);
         }}
       />
     );
