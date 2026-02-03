@@ -59,7 +59,9 @@ const LeftPanel: React.FC = () => {
     const juzNum = parseInt(e.target.value, 10);
     if (!isNaN(juzNum)) {
       setCurrentJuz(juzNum);
-      // Navigate to juz page (approximate: juz 1 = page 1, juz 2 = page 22, etc.)
+      // Navigate to juz page
+      // Approximate calculation: most juz are ~20 pages
+      // In a full implementation, use a proper juz-to-page lookup table
       const juzPage = 1 + (juzNum - 1) * 20;
       setCurrentPage(juzPage);
     }

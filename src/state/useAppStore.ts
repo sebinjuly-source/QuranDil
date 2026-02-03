@@ -372,8 +372,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   drawingModeActive: false,
   setDrawingModeActive: (active) => set({ drawingModeActive: active }),
 
-  // Theme
-  theme: (localStorage.getItem('qurandil-theme') as 'light' | 'dark' | 'sepia') || 'light',
+  // Theme - with validation
+  theme: (() => {
+    const stored = localStorage.getItem('qurandil-theme');
+    const validThemes: Array<'light' | 'dark' | 'sepia'> = ['light', 'dark', 'sepia'];
+    return stored && validThemes.includes(stored as any) ? (stored as 'light' | 'dark' | 'sepia') : 'light';
+  })(),
   setTheme: (theme) => {
     localStorage.setItem('qurandil-theme', theme);
     set({ theme });
