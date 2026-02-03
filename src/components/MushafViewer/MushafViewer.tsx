@@ -28,6 +28,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const isDualPage = useAppStore((state) => state.navigation.isDualPage);
+  const hifzMode = useAppStore((state) => state.navigation.hifzMode);
   const zoom = useAppStore((state) => state.navigation.zoom);
   const engine = useAppStore((state) => state.engine);
   const highlightController = useAppStore((state) => state.audio.highlightController);
@@ -62,7 +63,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     if (isDualPage && pageData2 && canvas2Ref.current) {
       renderPage(canvas2Ref.current, pageData2, currentPage + 1);
     }
-  }, [pageData, pageData2, isDualPage, zoom, highlightController, currentPage]);
+  }, [pageData, pageData2, isDualPage, zoom, highlightController, currentPage, hifzMode]);
 
   const loadPage = async (page: number) => {
     setLoading(true);
@@ -182,7 +183,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
 
     // Configure Arabic text rendering
     ctx.font = '24px "Scheherazade New", "Amiri", "Traditional Arabic", serif';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = hifzMode ? 'rgba(26, 26, 26, 0.1)' : '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.direction = 'rtl';
 
@@ -206,9 +207,16 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
       // Combine all text for this line
       const lineText = verses.map(v => v.text).join(' ');
       
-      // Draw the line text
+      // Draw the line text (blurred in hifz mode)
       if (lineText) {
-        ctx.fillText(lineText, startX, y);
+        if (hifzMode) {
+          // Add blur effect for hifz mode
+          ctx.filter = 'blur(8px)';
+          ctx.fillText(lineText, startX, y);
+          ctx.filter = 'none';
+        } else {
+          ctx.fillText(lineText, startX, y);
+        }
       }
     });
 

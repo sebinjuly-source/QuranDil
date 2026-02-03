@@ -55,6 +55,7 @@ export interface NavigationState {
   futureHistory: number[];
   isDualPage: boolean;
   isFullscreen: boolean;
+  hifzMode: boolean;
 }
 
 export interface SearchState {
@@ -77,6 +78,7 @@ export interface AppState {
   goForward: () => void;
   toggleDualPage: () => void;
   toggleFullscreen: () => void;
+  toggleHifzMode: () => void;
 
   // Search
   search: SearchState;
@@ -150,6 +152,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     futureHistory: [],
     isDualPage: false,
     isFullscreen: false,
+    hifzMode: false,
   },
   // Search state
   search: {
@@ -268,6 +271,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       navigation: { ...state.navigation, isFullscreen: newFullscreen }
     };
   }),
+  toggleHifzMode: () => set((state) => ({
+    navigation: { ...state.navigation, hifzMode: !state.navigation.hifzMode }
+  })),
 
   // Selection state
   selection: {

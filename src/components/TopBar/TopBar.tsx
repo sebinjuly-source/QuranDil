@@ -7,7 +7,9 @@ function TopBar() {
   const toggleFullscreen = useAppStore((state) => state.toggleFullscreen);
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
   const isDualPage = useAppStore((state) => state.navigation.isDualPage);
+  const hifzMode = useAppStore((state) => state.navigation.hifzMode);
   const toggleDualPage = useAppStore((state) => state.toggleDualPage);
+  const toggleHifzMode = useAppStore((state) => state.toggleHifzMode);
   const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
   const setSidePaneContent = useAppStore((state) => state.setSidePaneContent);
   const sidePaneContent = useAppStore((state) => state.sidePaneContent);
@@ -38,6 +40,13 @@ function TopBar() {
             title="Search (Ctrl+F)"
           >
             🔍
+          </button>
+          <button
+            className={`top-bar-btn ${hifzMode ? 'active' : ''}`}
+            onClick={toggleHifzMode}
+            title="Hifz Mode (Hide/Reveal text)"
+          >
+            {hifzMode ? '👁️' : '👁️‍🗨️'}
           </button>
           <button
             className="top-bar-btn"
