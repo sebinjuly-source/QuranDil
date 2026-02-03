@@ -37,16 +37,22 @@ export interface NavigationState {
   zoom: number;
   panX: number;
   panY: number;
+  history: number[];
+  isDualPage: boolean;
+  isFullscreen: boolean;
 }
 
 export interface AppState {
   // Navigation
   navigation: NavigationState;
-  setCurrentPage: (page: number) => void;
+  setCurrentPage: (page: number, addToHistory?: boolean) => void;
   setCurrentSurah: (surah: number) => void;
   setCurrentJuz: (juz: number) => void;
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
+  goBack: () => void;
+  toggleDualPage: () => void;
+  toggleFullscreen: () => void;
 
   // Selection
   selection: SelectionState;
@@ -72,6 +78,10 @@ export interface AppState {
   sidePaneContent: 'flashcards' | 'search' | 'mutashabihat' | null;
   setSidePaneOpen: (open: boolean) => void;
   setSidePaneContent: (content: 'flashcards' | 'search' | 'mutashabihat' | null) => void;
+  leftPanelOpen: boolean;
+  setLeftPanelOpen: (open: boolean) => void;
+  goToDialogOpen: boolean;
+  setGoToDialogOpen: (open: boolean) => void;
 
   // Theme
   theme: 'light' | 'dark';
@@ -90,10 +100,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     zoom: 1,
     panX: 0,
     panY: 0,
+    history: [],
+    isDualPage: false,
+    isFullscreen: false,
   },
-  setCurrentPage: (page) => set((state) => ({
-    navigation: { ...state.navigation, currentPage: page }
-  })),
+  setCurrentPage: (page, addToHistory = true) => set((state) => {
+    const newHistory = addToHistory 
+      ? [...state.navigation.history, state.navigation.currentPage].slice(-10)
+      : state.navigation.history;
+    return {
+      navigation: { 
+        ...state.navigation, 
+        currentPage: Math.max(1, Math.min(604, page)),
+        history: newHistory
+      }
+    };
+  }),
   setCurrentSurah: (surah) => set((state) => ({
     navigation: { ...state.navigation, currentSurah: surah }
   })),
@@ -106,6 +128,34 @@ export const useAppStore = create<AppState>((set, get) => ({
   setPan: (x, y) => set((state) => ({
     navigation: { ...state.navigation, panX: x, panY: y }
   })),
+  goBack: () => set((state) => {
+    const history = [...state.navigation.history];
+    const previousPage = history.pop();
+    if (previousPage !== undefined) {
+      return {
+        navigation: { 
+          ...state.navigation, 
+          currentPage: previousPage,
+          history
+        }
+      };
+    }
+    return state;
+  }),
+  toggleDualPage: () => set((state) => ({
+    navigation: { ...state.navigation, isDualPage: !state.navigation.isDualPage }
+  })),
+  toggleFullscreen: () => set((state) => {
+    const newFullscreen = !state.navigation.isFullscreen;
+    if (newFullscreen) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+    return {
+      navigation: { ...state.navigation, isFullscreen: newFullscreen }
+    };
+  }),
 
   // Selection state
   selection: {
@@ -180,6 +230,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   sidePaneContent: null,
   setSidePaneOpen: (open) => set({ sidePaneOpen: open }),
   setSidePaneContent: (content) => set({ sidePaneContent: content, sidePaneOpen: content !== null }),
+  leftPanelOpen: true,
+  setLeftPanelOpen: (open) => set({ leftPanelOpen: open }),
+  goToDialogOpen: false,
+  setGoToDialogOpen: (open) => set({ goToDialogOpen: open }),
 
   // Theme
   theme: 'light',

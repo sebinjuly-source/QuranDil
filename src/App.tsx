@@ -1,42 +1,110 @@
 import { useEffect } from 'react';
 import { useAppStore } from './state/useAppStore';
+import TopBar from './components/TopBar/TopBar';
+import LeftPanel from './components/LeftPanel/LeftPanel';
 import MushafViewer from './components/MushafViewer/MushafViewer';
 import SidePane from './components/SidePane/SidePane';
 import AudioPlayer from './components/Audio/AudioPlayer';
+import GoToDialog from './components/GoToDialog/GoToDialog';
 import './App.css';
 
 function App() {
   const theme = useAppStore((state) => state.theme);
   const sidePaneOpen = useAppStore((state) => state.sidePaneOpen);
+  const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
+  const currentPage = useAppStore((state) => state.navigation.currentPage);
+  const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
+  const setCurrentPage = useAppStore((state) => state.setCurrentPage);
+  const toggleFullscreen = useAppStore((state) => state.toggleFullscreen);
+  const setGoToDialogOpen = useAppStore((state) => state.setGoToDialogOpen);
+  const goBack = useAppStore((state) => state.goBack);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) {
+        return;
+      }
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          setCurrentPage(currentPage - 1);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          setCurrentPage(currentPage + 1);
+          break;
+        case 'Home':
+          e.preventDefault();
+          setCurrentPage(1);
+          break;
+        case 'End':
+          e.preventDefault();
+          setCurrentPage(604);
+          break;
+        case 'F11':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'f':
+        case 'F':
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            toggleFullscreen();
+          }
+          break;
+        case 'g':
+        case 'G':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            setGoToDialogOpen(true);
+          }
+          break;
+        case 'z':
+        case 'Z':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            goBack();
+          }
+          break;
+        case 'Escape':
+          if (isFullscreen) {
+            e.preventDefault();
+            toggleFullscreen();
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPage, isFullscreen, setCurrentPage, toggleFullscreen, setGoToDialogOpen, goBack]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      const storeFullscreen = useAppStore.getState().navigation.isFullscreen;
+      if (isCurrentlyFullscreen !== storeFullscreen) {
+        useAppStore.setState((state) => ({
+          navigation: { ...state.navigation, isFullscreen: isCurrentlyFullscreen }
+        }));
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   return (
     <div className="app">
-      <header className="app-header">
-        <div className="header-content">
-          <div className="logo">
-            <span className="logo-icon">❤️📖</span>
-            <h1>QuranDil</h1>
-          </div>
-          <nav className="header-nav">
-            <button className="nav-button" title="Settings">
-              ⚙️
-            </button>
-            <button
-              className="nav-button"
-              onClick={() => useAppStore.getState().toggleTheme()}
-              title="Toggle theme"
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-          </nav>
-        </div>
-      </header>
+      <TopBar />
 
-      <main className={`app-main ${sidePaneOpen ? 'with-sidepane' : ''}`}>
+      <main className={`app-main ${sidePaneOpen ? 'with-sidepane' : ''} ${leftPanelOpen ? 'with-leftpanel' : ''}`}>
+        <LeftPanel />
         <div className="mushaf-container">
           <MushafViewer />
         </div>
@@ -48,6 +116,7 @@ function App() {
       </main>
 
       <AudioPlayer />
+      <GoToDialog />
     </div>
   );
 }
