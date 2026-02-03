@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../state/useAppStore';
 import SelectionPopup from './SelectionPopup';
 import NavigationBar from './NavigationBar';
+import { TOTAL_QURAN_PAGES } from '../../data/quranMetadata';
 import './MushafViewer.css';
 
 interface MushafViewerProps {}
@@ -35,7 +36,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
 
   useEffect(() => {
     loadPage(currentPage);
-    if (isDualPage && currentPage < 604) {
+    if (isDualPage && currentPage < TOTAL_QURAN_PAGES) {
       loadPage2(currentPage + 1);
     }
   }, [currentPage, isDualPage]);
@@ -106,7 +107,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   };
 
   const loadPage2 = async (page: number) => {
-    if (page > 604) {
+    if (page > TOTAL_QURAN_PAGES) {
       setPageData2(null);
       return;
     }
@@ -271,7 +272,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           onMouseUp={handleMouseUp}
         />
         
-        {isDualPage && currentPage < 604 && (
+        {isDualPage && currentPage < TOTAL_QURAN_PAGES && (
           <canvas
             ref={canvas2Ref}
             className="mushaf-canvas mushaf-canvas-right"

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from './state/useAppStore';
 import { MUSHAF_CONFIG_KEY } from './constants';
+import { TOTAL_QURAN_PAGES } from './data/quranMetadata';
 import TopBar from './components/TopBar/TopBar';
 import LeftPanel from './components/LeftPanel/LeftPanel';
 import MushafViewer from './components/MushafViewer/MushafViewer';
@@ -74,7 +75,7 @@ function App() {
           break;
         case 'End':
           e.preventDefault();
-          setCurrentPage(604);
+          setCurrentPage(TOTAL_QURAN_PAGES);
           break;
         case 'F11':
           e.preventDefault();

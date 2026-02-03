@@ -3,6 +3,8 @@
  * Based on standard Mushaf page numbering (604 pages)
  */
 
+export const TOTAL_QURAN_PAGES = 604;
+
 export interface PageInfo {
   page: number;
   surah: number;

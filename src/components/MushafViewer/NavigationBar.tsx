@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '../../state/useAppStore';
-import { surahPageRanges, juzPageRanges } from '../../data/quranMetadata';
+import { surahPageRanges, juzPageRanges, TOTAL_QURAN_PAGES } from '../../data/quranMetadata';
 import './NavigationBar.css';
 
 const NavigationBar: React.FC = () => {
@@ -44,7 +44,7 @@ const NavigationBar: React.FC = () => {
 
   const handlePageInputBlur = () => {
     const pageNum = parseInt(pageInput, 10);
-    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= 604) {
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= TOTAL_QURAN_PAGES) {
       setCurrentPage(pageNum);
     } else {
       // Reset to current page if invalid
@@ -66,7 +66,7 @@ const NavigationBar: React.FC = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < 604) {
+    if (currentPage < TOTAL_QURAN_PAGES) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -161,7 +161,7 @@ const NavigationBar: React.FC = () => {
       <button 
         className="nav-arrow" 
         onClick={handleNextPage}
-        disabled={currentPage === 604}
+        disabled={currentPage === TOTAL_QURAN_PAGES}
         title="Next page (→)"
       >
         →

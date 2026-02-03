@@ -7,7 +7,7 @@ import { AppEngine } from './AppEngine';
 import { SearchResult } from '../engines/SearchEngine';
 import { RepeatMode, AudioPosition } from '../utils/audioUtils';
 import { AudioWordHighlightController, WordTimestamp } from '../engines/AudioWordHighlightController';
-import { getSurahForPage, getJuzForPage, getPageForSurah, getPageForJuz } from '../data/quranMetadata';
+import { getSurahForPage, getJuzForPage, getPageForSurah, getPageForJuz, TOTAL_QURAN_PAGES } from '../data/quranMetadata';
 
 export type FlashcardType = 'mistake' | 'mutashabihat' | 'transition' | 'custom-transition' | 'page-number';
 
@@ -163,7 +163,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     isListening: false,
   },
   setCurrentPage: (page, addToHistory = true) => set((state) => {
-    const newPage = Math.max(1, Math.min(604, page));
+    const newPage = Math.max(1, Math.min(TOTAL_QURAN_PAGES, page));
     // Only add to history if actually changing pages
     const newHistory = (addToHistory && state.navigation.currentPage !== newPage)
       ? [...state.navigation.history, state.navigation.currentPage].slice(-10)
