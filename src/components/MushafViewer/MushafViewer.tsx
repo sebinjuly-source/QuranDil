@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../state/useAppStore';
 import SelectionPopup from './SelectionPopup';
-import ZoomControl from './NavigationBar';
+import NavigationBar from './NavigationBar';
 import './MushafViewer.css';
 
 interface MushafViewerProps {}
@@ -193,6 +193,8 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
 
   return (
     <div className="mushaf-viewer">
+      <NavigationBar />
+      
       <div className="canvas-container">
         {loading && (
           <div className="loading-overlay">
@@ -219,8 +221,6 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           }}
         />
       </div>
-
-      <ZoomControl />
 
       {showPopup && (
         <SelectionPopup

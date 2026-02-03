@@ -396,7 +396,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   sidePaneContent: null,
   setSidePaneOpen: (open) => set({ sidePaneOpen: open }),
   setSidePaneContent: (content) => set({ sidePaneContent: content, sidePaneOpen: content !== null }),
-  leftPanelOpen: true,
+  leftPanelOpen: false,
   setLeftPanelOpen: (open) => set({ leftPanelOpen: open }),
   goToDialogOpen: false,
   setGoToDialogOpen: (open) => set({ goToDialogOpen: open }),
