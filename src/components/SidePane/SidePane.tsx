@@ -68,6 +68,7 @@ const SidePane: React.FC = () => {
                     {activeFlashcardType === 'mutashabihat' && '🟡 Mutashabihat'}
                     {activeFlashcardType === 'transition' && '🔵 Transition'}
                     {activeFlashcardType === 'custom-transition' && '🟣 Custom Transition'}
+                    {activeFlashcardType === 'page-number' && '🟢 Page Number'}
                   </div>
                   
                   <div className="flashcard-preview">

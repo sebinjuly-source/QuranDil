@@ -17,11 +17,11 @@
   --hover-bg: rgba(0, 0, 0, 0.05);
   
   /* Flashcard colors */
-  --color-mistake: #ef4444;
-  --color-mutashabihat: #eab308;
-  --color-transition: #3b82f6;
-  --color-custom-transition: #a855f7;
-  --color-page-number: #9ca3af;
+  --color-mistake: #ef4444; /* 🔴 Bright Red */
+  --color-mutashabihat: #eab308; /* 🟡 Yellow */
+  --color-transition: #3b82f6; /* 🔵 Blue */
+  --color-custom-transition: #a855f7; /* 🟣 Purple */
+  --color-page-number: #10b981; /* 🟢 Green */
 }
 
 [data-theme="dark"] {
