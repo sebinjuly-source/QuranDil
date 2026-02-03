@@ -7,6 +7,7 @@ import SidePane from './components/SidePane/SidePane';
 import SearchResults from './components/SearchResults/SearchResults';
 import AudioPlayer from './components/Audio/AudioPlayer';
 import GoToDialog from './components/GoToDialog/GoToDialog';
+import SettingsPanel from './components/Settings/SettingsPanel';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
   const sidePaneOpen = useAppStore((state) => state.sidePaneOpen);
   const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
   const searchResultsPaneOpen = useAppStore((state) => state.search.searchResultsPaneOpen);
+  const settingsPanelOpen = useAppStore((state) => state.settingsPanelOpen);
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
   const audio = useAppStore((state) => state.audio);
@@ -22,6 +24,7 @@ function App() {
   const toggleFullscreen = useAppStore((state) => state.toggleFullscreen);
   const setGoToDialogOpen = useAppStore((state) => state.setGoToDialogOpen);
   const setSearchResultsPaneOpen = useAppStore((state) => state.setSearchResultsPaneOpen);
+  const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
   const goBack = useAppStore((state) => state.goBack);
 
   useEffect(() => {
@@ -83,8 +86,17 @@ function App() {
             goBack();
           }
           break;
+        case ',':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            setSettingsPanelOpen(true);
+          }
+          break;
         case 'Escape':
-          if (searchResultsPaneOpen) {
+          if (settingsPanelOpen) {
+            e.preventDefault();
+            setSettingsPanelOpen(false);
+          } else if (searchResultsPaneOpen) {
             e.preventDefault();
             setSearchResultsPaneOpen(false);
           } else if (isFullscreen) {
@@ -97,7 +109,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isFullscreen, searchResultsPaneOpen, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, goBack, setAudioPlaying]);
+  }, [currentPage, isFullscreen, searchResultsPaneOpen, settingsPanelOpen, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, setSettingsPanelOpen, goBack, setAudioPlaying]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -137,6 +149,7 @@ function App() {
 
       <AudioPlayer />
       <GoToDialog />
+      <SettingsPanel isOpen={settingsPanelOpen} onClose={() => setSettingsPanelOpen(false)} />
     </div>
   );
 }

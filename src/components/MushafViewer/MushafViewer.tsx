@@ -22,6 +22,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+  const [selectedText, setSelectedText] = useState('');
   
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const zoom = useAppStore((state) => state.navigation.zoom);
@@ -152,6 +153,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     // Show selection popup
     setPopupPosition({ x: e.clientX, y: e.clientY });
+    setSelectedText('Sample selected text'); // TODO: Get actual selected text
     setShowPopup(true);
   };
 
@@ -190,6 +192,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
         <SelectionPopup
           x={popupPosition.x}
           y={popupPosition.y}
+          selectedText={selectedText}
           onClose={() => setShowPopup(false)}
         />
       )}

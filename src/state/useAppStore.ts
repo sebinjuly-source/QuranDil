@@ -120,6 +120,8 @@ export interface AppState {
   setLeftPanelOpen: (open: boolean) => void;
   goToDialogOpen: boolean;
   setGoToDialogOpen: (open: boolean) => void;
+  settingsPanelOpen: boolean;
+  setSettingsPanelOpen: (open: boolean) => void;
 
   // Theme
   theme: 'light' | 'dark';
@@ -336,6 +338,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setLeftPanelOpen: (open) => set({ leftPanelOpen: open }),
   goToDialogOpen: false,
   setGoToDialogOpen: (open) => set({ goToDialogOpen: open }),
+  settingsPanelOpen: false,
+  setSettingsPanelOpen: (open) => set({ settingsPanelOpen: open }),
 
   // Theme
   theme: 'light',

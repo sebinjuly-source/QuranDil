@@ -20,6 +20,7 @@ function TopBar() {
   const performSearch = useAppStore((state) => state.performSearch);
   const isListening = useAppStore((state) => state.search.isListening);
   const setIsListening = useAppStore((state) => state.setIsListening);
+  const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
   
   const [localQuery, setLocalQuery] = useState('');
   const [speechSupported, setSpeechSupported] = useState(true);
@@ -187,7 +188,8 @@ function TopBar() {
           </button>
           <button
             className="top-bar-btn"
-            title="Settings"
+            onClick={() => setSettingsPanelOpen(true)}
+            title="Settings (Ctrl+,)"
           >
             ⚙️
           </button>

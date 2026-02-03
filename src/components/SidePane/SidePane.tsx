@@ -1,51 +1,101 @@
+import { useState } from 'react';
 import { useAppStore } from '../../state/useAppStore';
+import DeckSelection from '../Flashcards/DeckSelection';
+import ReviewSession from '../Flashcards/ReviewSession';
+import SessionStats from '../Flashcards/SessionStats';
+import { SessionStats as SessionStatsType } from '../Flashcards/ReviewSession';
+import { Flashcard } from '../../engines/FlashcardStore';
 import './SidePane.css';
 
 const SidePane: React.FC = () => {
   const sidePaneContent = useAppStore((state) => state.sidePaneContent);
   const setSidePaneOpen = useAppStore((state) => state.setSidePaneOpen);
   const activeFlashcardType = useAppStore((state) => state.flashcards.activeType);
+  const isReviewing = useAppStore((state) => state.flashcards.isReviewing);
+  const stopReview = useAppStore((state) => state.stopReview);
+  
+  const [reviewCards] = useState<Flashcard[]>([]);
+  const [sessionStats, setSessionStats] = useState<SessionStatsType | null>(null);
+
+  const handleSessionComplete = (stats: SessionStatsType) => {
+    setSessionStats(stats);
+  };
+
+  const handleContinueStudying = () => {
+    setSessionStats(null);
+    // This will show the DeckSelection again
+  };
+
+  const handleFinish = () => {
+    setSessionStats(null);
+    stopReview();
+  };
 
   const renderContent = () => {
+    // Show session stats after completing a review
+    if (sessionStats) {
+      return (
+        <SessionStats 
+          stats={sessionStats} 
+          onContinue={handleContinueStudying}
+          onFinish={handleFinish}
+        />
+      );
+    }
+
+    // Show review session if actively reviewing
+    if (isReviewing && reviewCards.length > 0) {
+      return (
+        <ReviewSession 
+          cards={reviewCards} 
+          onComplete={handleSessionComplete}
+        />
+      );
+    }
+
     switch (sidePaneContent) {
       case 'flashcards':
-        return (
-          <div className="sidepane-section">
-            <h2>Create Flashcard</h2>
-            {activeFlashcardType && (
-              <div className={`flashcard-creator ${activeFlashcardType}`}>
-                <div className="flashcard-type-badge">
-                  {activeFlashcardType === 'mistake' && '🔴 Mistake'}
-                  {activeFlashcardType === 'mutashabihat' && '🟡 Mutashabihat'}
-                  {activeFlashcardType === 'transition' && '🔵 Transition'}
-                  {activeFlashcardType === 'custom-transition' && '🟣 Custom Transition'}
-                </div>
-                
-                <div className="flashcard-preview">
-                  <p>Flashcard preview will appear here</p>
-                  <p className="help-text">
-                    Click and drag on the Mushaf to select text for this flashcard
-                  </p>
-                </div>
+        // Show deck selection if not reviewing, or flashcard creator
+        if (activeFlashcardType && !isReviewing) {
+          return (
+            <div className="sidepane-section">
+              <h2>Create Flashcard</h2>
+              {activeFlashcardType && (
+                <div className={`flashcard-creator ${activeFlashcardType}`}>
+                  <div className="flashcard-type-badge">
+                    {activeFlashcardType === 'mistake' && '🔴 Mistake'}
+                    {activeFlashcardType === 'mutashabihat' && '🟡 Mutashabihat'}
+                    {activeFlashcardType === 'transition' && '🔵 Transition'}
+                    {activeFlashcardType === 'custom-transition' && '🟣 Custom Transition'}
+                  </div>
+                  
+                  <div className="flashcard-preview">
+                    <p>Flashcard preview will appear here</p>
+                    <p className="help-text">
+                      Click and drag on the Mushaf to select text for this flashcard
+                    </p>
+                  </div>
 
-                <div className="flashcard-actions">
-                  <button className="btn btn-primary">Save Flashcard</button>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => useAppStore.getState().setActiveFlashcardType(null)}
-                  >
-                    Cancel
-                  </button>
+                  <div className="flashcard-actions">
+                    <button className="btn btn-primary">Save Flashcard</button>
+                    <button 
+                      className="btn btn-secondary"
+                      onClick={() => useAppStore.getState().setActiveFlashcardType(null)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
+              )}
+
+              <div className="flashcard-list">
+                <h3>Recent Flashcards</h3>
+                <p className="empty-state">No flashcards yet. Create your first one!</p>
               </div>
-            )}
-
-            <div className="flashcard-list">
-              <h3>Recent Flashcards</h3>
-              <p className="empty-state">No flashcards yet. Create your first one!</p>
             </div>
-          </div>
-        );
+          );
+        }
+        return <DeckSelection />;
       
       case 'search':
         return (
