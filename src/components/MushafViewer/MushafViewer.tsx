@@ -67,7 +67,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
         return {
           surah,
           ayah,
-          text: verse.text_uthmani,
+          text: verse.text_uthmani || verse.text_imlaei || '', // Fallback to empty string
           line: Math.floor((index / verses.length) * linesPerPage) + 1,
         };
       });
@@ -75,6 +75,8 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
       setPageData({ verses: versesWithLines });
     } catch (error) {
       console.error('Error loading page:', error);
+      // Set empty data on error to prevent "undefined" display
+      setPageData({ verses: [] });
     } finally {
       setLoading(false);
     }
@@ -114,7 +116,8 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     const startY = 80;
     const startX = width - 80; // RTL - start from right
 
-    ctx.font = '18px "Traditional Arabic", "Scheherazade New", serif';
+    // Use the Google Fonts we added
+    ctx.font = '22px "Scheherazade New", "Amiri", "Traditional Arabic", serif';
     ctx.fillStyle = '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.direction = 'rtl';
@@ -132,20 +135,30 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
       let x = startX;
       
       verses.forEach((verse, idx) => {
+        // Skip if no text
+        if (!verse.text) return;
+        
         // Draw ayah number in circle
         if (idx > 0) {
           ctx.fillText(' ۝ ', x, y);
           x -= 20;
         }
         
-        // Draw verse text
-        ctx.fillText(verse.text, x, y);
+        // Draw verse text with ayah number
+        const ayahNum = `﴿${verse.ayah}﴾`;
+        ctx.fillText(verse.text + ' ' + ayahNum, x, y);
         
         // Measure text for next position
-        const metrics = ctx.measureText(verse.text);
+        const metrics = ctx.measureText(verse.text + ' ' + ayahNum);
         x -= metrics.width + 10;
       });
     });
+
+    // Draw page number at bottom center
+    ctx.textAlign = 'center';
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#666666';
+    ctx.fillText(`${currentPage}`, width / 2, height - 15);
 
     ctx.restore();
   };

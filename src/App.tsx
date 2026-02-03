@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from './state/useAppStore';
 import TopBar from './components/TopBar/TopBar';
 import LeftPanel from './components/LeftPanel/LeftPanel';
@@ -9,9 +9,12 @@ import AudioPlayer from './components/Audio/AudioPlayer';
 import GoToDialog from './components/GoToDialog/GoToDialog';
 import SettingsPanel from './components/Settings/SettingsPanel';
 import DrawingCanvas from './components/Drawing/DrawingCanvas';
+import MushafSetupWizard from './components/Setup/MushafSetupWizard';
 import './App.css';
 
 function App() {
+  const [isFirstLaunch, setIsFirstLaunch] = useState(true);
+  const [mushafConfigured, setMushafConfigured] = useState(false);
   const theme = useAppStore((state) => state.theme);
   const sidePaneOpen = useAppStore((state) => state.sidePaneOpen);
   const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
@@ -29,6 +32,18 @@ function App() {
   const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
   const setDrawingModeActive = useAppStore((state) => state.setDrawingModeActive);
   const goBack = useAppStore((state) => state.goBack);
+
+  // Check if Mushaf is configured on first load
+  useEffect(() => {
+    const config = localStorage.getItem('qurandil-mushaf-config');
+    if (config) {
+      setMushafConfigured(true);
+      setIsFirstLaunch(false);
+    } else {
+      setIsFirstLaunch(true);
+      setMushafConfigured(false);
+    }
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -138,6 +153,18 @@ function App() {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  // Show setup wizard if this is first launch
+  if (isFirstLaunch && !mushafConfigured) {
+    return (
+      <MushafSetupWizard
+        onComplete={() => {
+          setMushafConfigured(true);
+          setIsFirstLaunch(false);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app">
