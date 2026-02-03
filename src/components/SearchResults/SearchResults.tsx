@@ -14,10 +14,10 @@ function SearchResults() {
   const setAudioAyah = useAppStore((state) => state.setAudioAyah);
   const setAudioPlaying = useAppStore((state) => state.setAudioPlaying);
   
-  const [currentPage, setCurrentPageLocal] = useState(1);
+  const [paginationPage, setPaginationPage] = useState(1);
 
   const totalPages = Math.ceil(searchResults.length / RESULTS_PER_PAGE);
-  const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+  const startIndex = (paginationPage - 1) * RESULTS_PER_PAGE;
   const endIndex = startIndex + RESULTS_PER_PAGE;
   const currentResults = searchResults.slice(startIndex, endIndex);
 
@@ -130,18 +130,18 @@ function SearchResults() {
             <div className="search-pagination">
               <button
                 className="pagination-btn"
-                onClick={() => setCurrentPageLocal(currentPage - 1)}
-                disabled={currentPage === 1}
+                onClick={() => setPaginationPage(paginationPage - 1)}
+                disabled={paginationPage === 1}
               >
                 ← Previous
               </button>
               <span className="pagination-info">
-                Page {currentPage} of {totalPages}
+                Page {paginationPage} of {totalPages}
               </span>
               <button
                 className="pagination-btn"
-                onClick={() => setCurrentPageLocal(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                onClick={() => setPaginationPage(paginationPage + 1)}
+                disabled={paginationPage === totalPages}
               >
                 Next →
               </button>

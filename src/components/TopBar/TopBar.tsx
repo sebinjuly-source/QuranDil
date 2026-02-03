@@ -113,9 +113,9 @@ function TopBar() {
       recognitionRef.current?.stop();
     } else {
       try {
-        // Detect language from current input
-        const isArabic = /[\u0600-\u06FF]/.test(localQuery);
-        recognitionRef.current.lang = isArabic ? 'ar-SA' : 'en-US';
+        // Default to Arabic for Middle East region, English otherwise
+        const defaultLang = navigator.language.startsWith('ar') ? 'ar-SA' : 'en-US';
+        recognitionRef.current.lang = defaultLang;
         recognitionRef.current.start();
       } catch (error) {
         console.error('Error starting speech recognition:', error);

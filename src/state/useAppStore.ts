@@ -130,13 +130,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     isListening: false,
   },
   setCurrentPage: (page, addToHistory = true) => set((state) => {
-    const newHistory = addToHistory 
+    const newPage = Math.max(1, Math.min(604, page));
+    // Only add to history if actually changing pages
+    const newHistory = (addToHistory && state.navigation.currentPage !== newPage)
       ? [...state.navigation.history, state.navigation.currentPage].slice(-10)
       : state.navigation.history;
     return {
       navigation: { 
         ...state.navigation, 
-        currentPage: Math.max(1, Math.min(604, page)),
+        currentPage: newPage,
         history: newHistory
       }
     };

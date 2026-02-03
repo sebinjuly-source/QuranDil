@@ -187,6 +187,13 @@ class SearchEngine {
     }
   }
 
+  /**
+   * Search for Arabic text in the Quran with fuzzy matching
+   * Note: This performs a sequential search through all 604 pages,
+   * which may take 5-10 seconds on first search. Results are cached
+   * for subsequent searches. Consider pre-indexing or using Web Workers
+   * for production use with large datasets.
+   */
   async searchArabic(query: string): Promise<SearchResult[]> {
     if (!query || query.trim().length < 2) {
       return [];
@@ -236,6 +243,12 @@ class SearchEngine {
     return results;
   }
 
+  /**
+   * Search for text in translations
+   * Note: This is a placeholder implementation that searches surah names.
+   * Full translation search requires additional API endpoints or pre-indexed
+   * translation data. Sequential page loading may cause delays.
+   */
   async searchTranslation(query: string): Promise<SearchResult[]> {
     if (!query || query.trim().length < 2) {
       return [];
