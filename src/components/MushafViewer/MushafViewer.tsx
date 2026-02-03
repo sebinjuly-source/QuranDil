@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../state/useAppStore';
-import NavigationBar from './NavigationBar';
 import SelectionPopup from './SelectionPopup';
+import ZoomControl from './NavigationBar';
 import './MushafViewer.css';
 
 interface MushafViewerProps {}
@@ -184,8 +184,8 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     ctx.restore();
   };
 
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    // Show selection popup
+  const handleCanvasDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Show selection popup on double-click
     setPopupPosition({ x: e.clientX, y: e.clientY });
     setSelectedText('Sample selected text'); // TODO: Get actual selected text
     setShowPopup(true);
@@ -193,8 +193,6 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
 
   return (
     <div className="mushaf-viewer">
-      <NavigationBar />
-      
       <div className="canvas-container">
         {loading && (
           <div className="loading-overlay">
@@ -206,7 +204,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
         <canvas
           ref={canvasRef}
           className="mushaf-canvas"
-          onClick={handleCanvasClick}
+          onDoubleClick={handleCanvasDoubleClick}
         />
         
         {/* Highlight overlay canvas */}
@@ -221,6 +219,8 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           }}
         />
       </div>
+
+      <ZoomControl />
 
       {showPopup && (
         <SelectionPopup

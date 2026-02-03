@@ -32,10 +32,30 @@ const LeftPanel: React.FC = () => {
     }
   };
 
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handlePageInputBlur = () => {
+    // Navigate on blur if valid
+    const page = parseInt(pageInput, 10);
+    if (!isNaN(page) && page >= 1 && page <= 604) {
+      setCurrentPage(page);
+    } else {
+      // Reset to current page if invalid
+      setPageInput(currentPage.toString());
+    }
+  };
+
   const handleSurahChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const surahNum = parseInt(e.target.value, 10);
     if (!isNaN(surahNum)) {
       setCurrentSurah(surahNum);
+      // Navigate to the surah's first page
+      const surah = surahData.find(s => s.number === surahNum);
+      if (surah && surah.page) {
+        setCurrentPage(surah.page);
+      }
     }
   };
 
@@ -43,6 +63,9 @@ const LeftPanel: React.FC = () => {
     const juzNum = parseInt(e.target.value, 10);
     if (!isNaN(juzNum)) {
       setCurrentJuz(juzNum);
+      // Navigate to juz page (approximate: juz 1 = page 1, juz 2 = page 22, etc.)
+      const juzPage = 1 + (juzNum - 1) * 20;
+      setCurrentPage(juzPage);
     }
   };
 
@@ -81,10 +104,11 @@ const LeftPanel: React.FC = () => {
                     min="1"
                     max="604"
                     value={pageInput}
-                    onChange={(e) => setPageInput(e.target.value)}
+                    onChange={handlePageInputChange}
+                    onBlur={handlePageInputBlur}
                     className="control-input"
+                    placeholder="1-604"
                   />
-                  <button type="submit" className="go-btn">Go</button>
                 </form>
               </div>
 
@@ -122,25 +146,29 @@ const LeftPanel: React.FC = () => {
                 </select>
               </div>
 
-              <div className="control-group">
-                <label htmlFor="ayah-input">Ayah (e.g., 2:255)</label>
-                <form onSubmit={handleAyahNavigate} className="inline-form">
-                  <input
-                    id="ayah-input"
-                    type="text"
-                    placeholder="2:255"
-                    value={ayahInput}
-                    onChange={(e) => setAyahInput(e.target.value)}
-                    className="control-input"
-                  />
-                  <button type="submit" className="go-btn">Go</button>
-                </form>
-              </div>
-
               <div className="current-location">
                 <strong>Current:</strong> Page {currentPage}
                 {currentSurah && ` • Surah ${currentSurah}`}
                 {currentJuz && ` • Juz ${currentJuz}`}
+              </div>
+
+              <div className="navigation-buttons">
+                <button
+                  className="nav-action-btn"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  title="Previous page (←)"
+                >
+                  ← Previous
+                </button>
+                <button
+                  className="nav-action-btn"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === 604}
+                  title="Next page (→)"
+                >
+                  Next →
+                </button>
               </div>
 
               <button
@@ -149,7 +177,7 @@ const LeftPanel: React.FC = () => {
                 disabled={history.length === 0}
                 title="Go back (Ctrl+Z)"
               >
-                ← Back
+                ↶ Back
               </button>
             </div>
           </section>
