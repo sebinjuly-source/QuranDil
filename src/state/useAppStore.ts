@@ -7,6 +7,7 @@ import { AppEngine } from './AppEngine';
 import { SearchResult } from '../engines/SearchEngine';
 import { RepeatMode, AudioPosition } from '../utils/audioUtils';
 import { AudioWordHighlightController, WordTimestamp } from '../engines/AudioWordHighlightController';
+import { getSurahForPage, getJuzForPage, getPageForSurah, getPageForJuz } from '../data/quranMetadata';
 
 export type FlashcardType = 'mistake' | 'mutashabihat' | 'transition' | 'custom-transition' | 'page-number';
 
@@ -140,8 +141,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Navigation state
   navigation: {
     currentPage: 1,
-    currentSurah: null,
-    currentJuz: null,
+    currentSurah: 1, // Al-Fatihah
+    currentJuz: 1,
     zoom: 1,
     panX: 0,
     panY: 0,
@@ -168,21 +169,53 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Clear future history when navigating to a new page
     const clearFuture = addToHistory && state.navigation.currentPage !== newPage;
     
+    // Sync Surah and Juz based on the new page
+    const newSurah = getSurahForPage(newPage);
+    const newJuz = getJuzForPage(newPage);
+    
     return {
       navigation: { 
         ...state.navigation, 
         currentPage: newPage,
+        currentSurah: newSurah,
+        currentJuz: newJuz,
         history: newHistory,
         futureHistory: clearFuture ? [] : state.navigation.futureHistory
       }
     };
   }),
-  setCurrentSurah: (surah) => set((state) => ({
-    navigation: { ...state.navigation, currentSurah: surah }
-  })),
-  setCurrentJuz: (juz) => set((state) => ({
-    navigation: { ...state.navigation, currentJuz: juz }
-  })),
+  setCurrentSurah: (surah) => set((state) => {
+    // Navigate to the starting page of the surah
+    const newPage = getPageForSurah(surah);
+    const newJuz = getJuzForPage(newPage);
+    
+    return {
+      navigation: { 
+        ...state.navigation, 
+        currentPage: newPage,
+        currentSurah: surah,
+        currentJuz: newJuz,
+        history: [...state.navigation.history, state.navigation.currentPage].slice(-10),
+        futureHistory: []
+      }
+    };
+  }),
+  setCurrentJuz: (juz) => set((state) => {
+    // Navigate to the starting page of the juz
+    const newPage = getPageForJuz(juz);
+    const newSurah = getSurahForPage(newPage);
+    
+    return {
+      navigation: { 
+        ...state.navigation, 
+        currentPage: newPage,
+        currentSurah: newSurah,
+        currentJuz: juz,
+        history: [...state.navigation.history, state.navigation.currentPage].slice(-10),
+        futureHistory: []
+      }
+    };
+  }),
   setZoom: (zoom) => set((state) => ({
     navigation: { ...state.navigation, zoom: Math.max(0.5, Math.min(3, zoom)) }
   })),
