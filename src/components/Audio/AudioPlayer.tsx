@@ -18,6 +18,7 @@ import {
   getDefaultPosition,
   getSurahName,
 } from '../../utils/audioUtils';
+import { loadWordTimestamps, getTimestampCacheKey } from '../../utils/wordTimestampLoader';
 import './AudioPlayer.css';
 
 const PLAYER_WIDTH = 380;
@@ -44,9 +45,15 @@ const AudioPlayer: React.FC = () => {
   const setPlayerMinimized = useAppStore((state) => state.setPlayerMinimized);
   const setAudioLoading = useAppStore((state) => state.setAudioLoading);
   const setAudioAyah = useAppStore((state) => state.setAudioAyah);
+  const initHighlightController = useAppStore((state) => state.initHighlightController);
+  const setWordTimestamps = useAppStore((state) => state.setWordTimestamps);
+  const engine = useAppStore((state) => state.engine);
 
   // Load saved preferences on mount
   useEffect(() => {
+    // Initialize highlight controller
+    initHighlightController();
+    
     const savedPosition = loadPlayerPosition();
     if (savedPosition) {
       const constrained = constrainToViewport(savedPosition, PLAYER_WIDTH, PLAYER_HEIGHT);
@@ -63,7 +70,7 @@ const AudioPlayer: React.FC = () => {
 
     const savedGap = loadGapDuration();
     setGapDuration(savedGap);
-  }, [setPlayerPosition, setPlayerMinimized, setPlaybackSpeed, setGapDuration]);
+  }, [setPlayerPosition, setPlayerMinimized, setPlaybackSpeed, setGapDuration, initHighlightController]);
 
   // Load audio when surah/ayah changes
   useEffect(() => {
@@ -76,6 +83,9 @@ const AudioPlayer: React.FC = () => {
     audioElement.src = audioUrl;
     audioElement.load();
 
+    // Load word timestamps for highlighting
+    loadWordTimestampsForAyah(audio.currentSurah, audio.currentAyah);
+
     if (audio.isPlaying) {
       audioElement.play().catch((err) => {
         console.error('Playback error:', err);
@@ -84,6 +94,32 @@ const AudioPlayer: React.FC = () => {
       });
     }
   }, [audio.currentSurah, audio.currentAyah, audio.currentReciter, audio.isPlaying, setAudioPlaying, setAudioLoading]);
+
+  // Load word timestamps
+  const loadWordTimestampsForAyah = async (surah: number, ayah: number) => {
+    const cacheKey = getTimestampCacheKey(surah, ayah);
+    
+    // Check cache first
+    if (audio.wordTimestampsCache.has(cacheKey)) {
+      const timestamps = audio.wordTimestampsCache.get(cacheKey)!;
+      if (audio.highlightController) {
+        audio.highlightController.setWordTimestamps(timestamps);
+      }
+      return;
+    }
+
+    // Load from API
+    try {
+      const timestamps = await loadWordTimestamps(surah, ayah, engine.quranApi);
+      setWordTimestamps(cacheKey, timestamps);
+      
+      if (audio.highlightController) {
+        audio.highlightController.setWordTimestamps(timestamps);
+      }
+    } catch (error) {
+      console.error('Failed to load word timestamps:', error);
+    }
+  };
 
   // Audio event handlers
   useEffect(() => {
@@ -142,6 +178,51 @@ const AudioPlayer: React.FC = () => {
       audioRef.current.playbackRate = audio.playbackSpeed;
     }
   }, [audio.playbackSpeed]);
+
+  // Integrate highlight controller with audio playback
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (!audioElement || !audio.highlightController) return;
+
+    const handlePlay = () => {
+      // Find highlight canvas in DOM
+      const highlightCanvas = document.querySelector('.highlight-overlay') as HTMLCanvasElement;
+      if (highlightCanvas && audio.highlightController) {
+        audio.highlightController.start(audioElement, highlightCanvas);
+      }
+    };
+
+    const handlePause = () => {
+      if (audio.highlightController) {
+        audio.highlightController.stop();
+      }
+    };
+
+    const handleEnded = () => {
+      if (audio.highlightController) {
+        audio.highlightController.stop();
+      }
+    };
+
+    audioElement.addEventListener('play', handlePlay);
+    audioElement.addEventListener('pause', handlePause);
+    audioElement.addEventListener('ended', handleEnded);
+
+    return () => {
+      audioElement.removeEventListener('play', handlePlay);
+      audioElement.removeEventListener('pause', handlePause);
+      audioElement.removeEventListener('ended', handleEnded);
+    };
+  }, [audio.highlightController]);
+
+  // Stop highlight controller on page change
+  useEffect(() => {
+    return () => {
+      if (audio.highlightController) {
+        audio.highlightController.stop();
+      }
+    };
+  }, [audio.currentPage, audio.highlightController]);
 
   const handleVerseEnd = useCallback(() => {
     if (gapTimeoutRef.current) {

@@ -39,3 +39,11 @@ export type {
   Annotation,
   AnnotationFilter,
 } from './AnnotationStore';
+
+// Audio Word Highlight Controller
+export { AudioWordHighlightController } from './AudioWordHighlightController';
+export type { WordTimestamp, HighlightStyle } from './AudioWordHighlightController';
+
+// Search Engine
+export { searchEngine } from './SearchEngine';
+export type { SearchResult } from './SearchEngine';

@@ -17,6 +17,7 @@ interface PageData {
 
 const MushafViewer: React.FC<MushafViewerProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const highlightCanvasRef = useRef<HTMLCanvasElement>(null);
   const [pageData, setPageData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -25,6 +26,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const zoom = useAppStore((state) => state.navigation.zoom);
   const engine = useAppStore((state) => state.engine);
+  const highlightController = useAppStore((state) => state.audio.highlightController);
 
   useEffect(() => {
     loadPage(currentPage);
@@ -33,8 +35,23 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
   useEffect(() => {
     if (pageData && canvasRef.current) {
       renderPage();
+      
+      // Sync highlight canvas dimensions with main canvas
+      if (highlightCanvasRef.current && canvasRef.current) {
+        const canvas = canvasRef.current;
+        const highlightCanvas = highlightCanvasRef.current;
+        highlightCanvas.width = canvas.width;
+        highlightCanvas.height = canvas.height;
+        highlightCanvas.style.width = canvas.style.width;
+        highlightCanvas.style.height = canvas.style.height;
+        
+        // Update highlight controller transform if active
+        if (highlightController) {
+          highlightController.setTransform(zoom, 0, 0);
+        }
+      }
     }
-  }, [pageData, zoom]);
+  }, [pageData, zoom, highlightController]);
 
   const loadPage = async (page: number) => {
     setLoading(true);
@@ -154,6 +171,18 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           ref={canvasRef}
           className="mushaf-canvas"
           onClick={handleCanvasClick}
+        />
+        
+        {/* Highlight overlay canvas */}
+        <canvas
+          ref={highlightCanvasRef}
+          className="mushaf-canvas highlight-overlay"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            pointerEvents: 'none',
+          }}
         />
       </div>
 

@@ -6,6 +6,7 @@ import { create } from 'zustand';
 import { AppEngine } from './AppEngine';
 import { SearchResult } from '../engines/SearchEngine';
 import { RepeatMode, AudioPosition } from '../utils/audioUtils';
+import { AudioWordHighlightController, WordTimestamp } from '../engines/AudioWordHighlightController';
 
 export type FlashcardType = 'mistake' | 'mutashabihat' | 'transition' | 'custom-transition' | 'page-number';
 
@@ -30,6 +31,9 @@ export interface AudioState {
   playerMinimized: boolean;
   isLoading: boolean;
   currentPage: number | null;
+  highlightController: AudioWordHighlightController | null;
+  currentHighlightedWord: string | null;
+  wordTimestampsCache: Map<string, WordTimestamp[]>;
 }
 
 export interface FlashcardState {
@@ -96,6 +100,9 @@ export interface AppState {
   setPlayerPosition: (position: AudioPosition) => void;
   setPlayerMinimized: (minimized: boolean) => void;
   setAudioLoading: (loading: boolean) => void;
+  initHighlightController: () => void;
+  setWordTimestamps: (verseKey: string, timestamps: WordTimestamp[]) => void;
+  setCurrentHighlightedWord: (wordId: string | null) => void;
 
   // Flashcards
   flashcards: FlashcardState;
@@ -233,6 +240,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     playerMinimized: false,
     isLoading: false,
     currentPage: null,
+    highlightController: null,
+    currentHighlightedWord: null,
+    wordTimestampsCache: new Map(),
   },
   setAudioPlaying: (playing) => set((state) => ({
     audio: { ...state.audio, isPlaying: playing }
@@ -263,6 +273,24 @@ export const useAppStore = create<AppState>((set, get) => ({
   })),
   setAudioLoading: (loading) => set((state) => ({
     audio: { ...state.audio, isLoading: loading }
+  })),
+  initHighlightController: () => set((state) => {
+    if (!state.audio.highlightController) {
+      return {
+        audio: { ...state.audio, highlightController: new AudioWordHighlightController() }
+      };
+    }
+    return state;
+  }),
+  setWordTimestamps: (verseKey, timestamps) => set((state) => {
+    const newCache = new Map(state.audio.wordTimestampsCache);
+    newCache.set(verseKey, timestamps);
+    return {
+      audio: { ...state.audio, wordTimestampsCache: newCache }
+    };
+  }),
+  setCurrentHighlightedWord: (wordId) => set((state) => ({
+    audio: { ...state.audio, currentHighlightedWord: wordId }
   })),
 
   // Flashcards state
