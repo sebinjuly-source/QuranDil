@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import { AppEngine } from './AppEngine';
 import { SearchResult } from '../engines/SearchEngine';
+import { RepeatMode, AudioPosition } from '../utils/audioUtils';
 
 export type FlashcardType = 'mistake' | 'mutashabihat' | 'transition' | 'custom-transition' | 'page-number';
 
@@ -22,6 +23,13 @@ export interface AudioState {
   currentSurah: number | null;
   currentAyah: number | null;
   volume: number;
+  playbackSpeed: number;
+  repeatMode: RepeatMode;
+  gapDuration: number;
+  playerPosition: AudioPosition;
+  playerMinimized: boolean;
+  isLoading: boolean;
+  currentPage: number | null;
 }
 
 export interface FlashcardState {
@@ -80,8 +88,14 @@ export interface AppState {
   audio: AudioState;
   setAudioPlaying: (playing: boolean) => void;
   setAudioReciter: (reciter: string) => void;
-  setAudioAyah: (surah: number, ayah: number) => void;
+  setAudioAyah: (surah: number, ayah: number, page?: number) => void;
   setVolume: (volume: number) => void;
+  setPlaybackSpeed: (speed: number) => void;
+  setRepeatMode: (mode: RepeatMode) => void;
+  setGapDuration: (gap: number) => void;
+  setPlayerPosition: (position: AudioPosition) => void;
+  setPlayerMinimized: (minimized: boolean) => void;
+  setAudioLoading: (loading: boolean) => void;
 
   // Flashcards
   flashcards: FlashcardState;
@@ -212,6 +226,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     currentSurah: null,
     currentAyah: null,
     volume: 0.8,
+    playbackSpeed: 1,
+    repeatMode: 'off',
+    gapDuration: 1,
+    playerPosition: { x: window.innerWidth - 400, y: window.innerHeight - 200 },
+    playerMinimized: false,
+    isLoading: false,
+    currentPage: null,
   },
   setAudioPlaying: (playing) => set((state) => ({
     audio: { ...state.audio, isPlaying: playing }
@@ -219,11 +240,29 @@ export const useAppStore = create<AppState>((set, get) => ({
   setAudioReciter: (reciter) => set((state) => ({
     audio: { ...state.audio, currentReciter: reciter }
   })),
-  setAudioAyah: (surah, ayah) => set((state) => ({
-    audio: { ...state.audio, currentSurah: surah, currentAyah: ayah }
+  setAudioAyah: (surah, ayah, page) => set((state) => ({
+    audio: { ...state.audio, currentSurah: surah, currentAyah: ayah, currentPage: page ?? state.audio.currentPage }
   })),
   setVolume: (volume) => set((state) => ({
     audio: { ...state.audio, volume: Math.max(0, Math.min(1, volume)) }
+  })),
+  setPlaybackSpeed: (speed) => set((state) => ({
+    audio: { ...state.audio, playbackSpeed: speed }
+  })),
+  setRepeatMode: (mode) => set((state) => ({
+    audio: { ...state.audio, repeatMode: mode }
+  })),
+  setGapDuration: (gap) => set((state) => ({
+    audio: { ...state.audio, gapDuration: gap }
+  })),
+  setPlayerPosition: (position) => set((state) => ({
+    audio: { ...state.audio, playerPosition: position }
+  })),
+  setPlayerMinimized: (minimized) => set((state) => ({
+    audio: { ...state.audio, playerMinimized: minimized }
+  })),
+  setAudioLoading: (loading) => set((state) => ({
+    audio: { ...state.audio, isLoading: loading }
   })),
 
   // Flashcards state

@@ -16,6 +16,8 @@ function App() {
   const searchResultsPaneOpen = useAppStore((state) => state.search.searchResultsPaneOpen);
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
+  const audio = useAppStore((state) => state.audio);
+  const setAudioPlaying = useAppStore((state) => state.setAudioPlaying);
   const setCurrentPage = useAppStore((state) => state.setCurrentPage);
   const toggleFullscreen = useAppStore((state) => state.toggleFullscreen);
   const setGoToDialogOpen = useAppStore((state) => state.setGoToDialogOpen);
@@ -33,6 +35,13 @@ function App() {
       }
 
       switch (e.key) {
+        case ' ':
+          // Spacebar for play/pause audio
+          if (audio.currentSurah && audio.currentAyah) {
+            e.preventDefault();
+            setAudioPlaying(!audio.isPlaying);
+          }
+          break;
         case 'ArrowLeft':
           e.preventDefault();
           setCurrentPage(currentPage - 1);
@@ -88,7 +97,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isFullscreen, searchResultsPaneOpen, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, goBack]);
+  }, [currentPage, isFullscreen, searchResultsPaneOpen, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, goBack, setAudioPlaying]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
