@@ -183,7 +183,7 @@ export class QuranApiClient {
     }
 
     // Fetch from API
-    const data = await this.fetchFromApi<{ verses: QVerse[] }>(`/verses/by_page/${pageNum}?words=true&word_fields=text_uthmani,line_number,page_number,position`);
+    const data = await this.fetchFromApi<{ verses: QVerse[] }>(`/verses/by_page/${pageNum}?words=true&word_fields=text_uthmani,text_imlaei,line_number,page_number,position`);
     
     const pageData: QPage = {
       page_number: pageNum,

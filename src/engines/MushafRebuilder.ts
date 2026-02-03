@@ -67,8 +67,10 @@ export class MushafRebuilder {
     // Extract all words from all verses
     const allWords: QWord[] = [];
     verses.forEach(verse => {
-      if (verse.words) {
-        allWords.push(...verse.words);
+      if (verse.words && verse.words.length > 0) {
+        // Filter out words that don't have text_uthmani or text_imlaei
+        const validWords = verse.words.filter(w => w.text_uthmani || w.text_imlaei);
+        allWords.push(...validWords);
       }
     });
 

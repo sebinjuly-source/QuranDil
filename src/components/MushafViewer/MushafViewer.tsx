@@ -60,10 +60,17 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
       // Use MushafRebuilder for accurate line-based layout
       const mushafPage = await engine.mushafRebuilder.rebuildPage(page);
       
+      // Debug logging to see what the API returns
+      console.log('API Response:', mushafPage);
+      console.log('First line words:', mushafPage.lines[0]?.words);
+      
       // Transform to component format with proper line numbers from word data
       const versesWithLines = mushafPage.lines.map(line => {
-        // Get the text for this line by combining all words
-        const lineText = line.words.map(w => w.text_uthmani).join(' ');
+        // Get the text for this line by combining all words with null safety
+        const lineText = line.words
+          .map(w => w.text_uthmani || w.text_imlaei || '')
+          .filter(t => t)
+          .join(' ');
         
         // Get the first verse key for this line for reference
         const verseKey = line.verse_keys[0] || '1:1';
