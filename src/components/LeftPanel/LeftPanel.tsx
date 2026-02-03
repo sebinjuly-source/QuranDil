@@ -22,7 +22,6 @@ const LeftPanel: React.FC = () => {
   const toggleTheme = useAppStore((state) => state.toggleTheme);
 
   const [pageInput, setPageInput] = useState(currentPage.toString());
-  const [ayahInput, setAyahInput] = useState('');
 
   const handlePageChange = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,11 +50,8 @@ const LeftPanel: React.FC = () => {
     const surahNum = parseInt(e.target.value, 10);
     if (!isNaN(surahNum)) {
       setCurrentSurah(surahNum);
-      // Navigate to the surah's first page
-      const surah = surahData.find(s => s.number === surahNum);
-      if (surah && surah.page) {
-        setCurrentPage(surah.page);
-      }
+      // Note: In a full implementation, you'd look up the page for this surah
+      // For now, we'll just set the surah without changing the page
     }
   };
 
@@ -66,16 +62,6 @@ const LeftPanel: React.FC = () => {
       // Navigate to juz page (approximate: juz 1 = page 1, juz 2 = page 22, etc.)
       const juzPage = 1 + (juzNum - 1) * 20;
       setCurrentPage(juzPage);
-    }
-  };
-
-  const handleAyahNavigate = (e: React.FormEvent) => {
-    e.preventDefault();
-    const match = ayahInput.match(/^(\d+):(\d+)$/);
-    if (match) {
-      const surah = parseInt(match[1], 10);
-      const ayah = parseInt(match[2], 10);
-      console.log(`Navigate to Surah ${surah}, Ayah ${ayah}`);
     }
   };
 
