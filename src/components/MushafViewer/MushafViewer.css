@@ -1,0 +1,48 @@
+.mushaf-viewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.canvas-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.mushaf-canvas {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px var(--shadow);
+  cursor: crosshair;
+  transition: transform 0.2s;
+}
+
+.mushaf-canvas:hover {
+  box-shadow: 0 6px 30px var(--shadow);
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  gap: 1rem;
+  z-index: 10;
+}
+
+.loading-overlay p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}

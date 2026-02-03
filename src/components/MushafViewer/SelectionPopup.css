@@ -1,0 +1,76 @@
+.selection-popup {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 32px var(--shadow);
+  z-index: 1000;
+  min-width: 200px;
+  animation: popupFadeIn 0.2s ease;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.popup-item:hover {
+  background: var(--bg-secondary);
+  transform: translateX(4px);
+}
+
+.popup-icon {
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-item.mistake:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-mistake);
+}
+
+.popup-item.mutashabihat:hover {
+  background: rgba(234, 179, 8, 0.1);
+  color: var(--color-mutashabihat);
+}
+
+.popup-item.transition:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-transition);
+}
+
+.popup-item.custom-transition:hover {
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--color-custom-transition);
+}
+
+.popup-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.5rem 0;
+}
