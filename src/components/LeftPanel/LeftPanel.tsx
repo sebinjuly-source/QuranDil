@@ -3,7 +3,7 @@ import { useAppStore } from '../../state/useAppStore';
 import { surahData } from '../../data/surahData';
 import './LeftPanel.css';
 
-function LeftPanel() {
+const LeftPanel: React.FC = () => {
   const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
   const setLeftPanelOpen = useAppStore((state) => state.setLeftPanelOpen);
   const currentPage = useAppStore((state) => state.navigation.currentPage);
@@ -16,6 +16,10 @@ function LeftPanel() {
   const toggleDualPage = useAppStore((state) => state.toggleDualPage);
   const goBack = useAppStore((state) => state.goBack);
   const history = useAppStore((state) => state.navigation.history);
+  const setSidePaneContent = useAppStore((state) => state.setSidePaneContent);
+  const setActiveFlashcardType = useAppStore((state) => state.setActiveFlashcardType);
+  const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
+  const toggleTheme = useAppStore((state) => state.toggleTheme);
 
   const [pageInput, setPageInput] = useState(currentPage.toString());
   const [ayahInput, setAyahInput] = useState('');
@@ -163,27 +167,81 @@ function LeftPanel() {
           </section>
 
           <section className="panel-section">
-            <h3 className="section-title">Audio Player</h3>
-            <div className="audio-preview">
-              <p className="text-muted">Audio controls preview</p>
-            </div>
-          </section>
-
-          <section className="panel-section">
             <h3 className="section-title">Flashcard Decks</h3>
             <div className="flashcard-list">
-              <button className="deck-btn">Mistakes</button>
-              <button className="deck-btn">Mutashabihat</button>
-              <button className="deck-btn">Transitions</button>
+              <button 
+                className="deck-btn mistakes"
+                onClick={() => {
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('mistake');
+                }}
+              >
+                🔴 Mistakes
+              </button>
+              <button 
+                className="deck-btn mutashabihat"
+                onClick={() => {
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('mutashabihat');
+                }}
+              >
+                🟡 Mutashabihat
+              </button>
+              <button 
+                className="deck-btn transitions"
+                onClick={() => {
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('transition');
+                }}
+              >
+                🔵 Transitions
+              </button>
+              <button 
+                className="deck-btn custom-transitions"
+                onClick={() => {
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('custom-transition');
+                }}
+              >
+                🟣 Custom Trans.
+              </button>
+              <button 
+                className="deck-btn page-numbers"
+                onClick={() => {
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('page-number');
+                }}
+              >
+                ⚪ Page Numbers
+              </button>
+              <button 
+                className="deck-btn study-all"
+                onClick={() => {
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType(null);
+                }}
+                style={{ marginTop: '8px', fontWeight: 'bold' }}
+              >
+                📚 Study All
+              </button>
             </div>
           </section>
 
           <section className="panel-section">
             <h3 className="section-title">Quick Settings</h3>
             <div className="settings-shortcuts">
-              <button className="setting-btn">⚙️ Preferences</button>
-              <button className="setting-btn">🎨 Appearance</button>
-              <button className="setting-btn">🔊 Audio</button>
+              <button 
+                className="setting-btn"
+                onClick={() => setSettingsPanelOpen(true)}
+              >
+                ⚙️ Preferences
+              </button>
+              <button 
+                className="setting-btn"
+                onClick={() => toggleTheme()}
+              >
+                🎨 Appearance
+              </button>
             </div>
           </section>
         </div>

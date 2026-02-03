@@ -50,6 +50,18 @@ const SelectionPopup: React.FC<SelectionPopupProps> = ({ x, y, selectedText, onC
     onClose();
   };
 
+  const handleTransition = () => {
+    setActiveFlashcardType('transition');
+    setSidePaneContent('flashcards');
+    onClose();
+  };
+
+  const handleCustomTransition = () => {
+    setActiveFlashcardType('custom-transition');
+    setSidePaneContent('flashcards');
+    onClose();
+  };
+
   const handleHighlight = (color: string) => {
     // TODO: Add highlight annotation to canvas
     console.log('Highlight with color:', color);
@@ -97,10 +109,24 @@ const SelectionPopup: React.FC<SelectionPopupProps> = ({ x, y, selectedText, onC
         Mutashabihat
       </button>
       
+      <div className="popup-divider" />
+      
       <button className="popup-item mistake" onClick={handleMistake}>
         <span className="popup-icon">🔴</span>
         Mistake
       </button>
+      
+      <button className="popup-item transition" onClick={handleTransition}>
+        <span className="popup-icon">🔵</span>
+        Transition
+      </button>
+      
+      <button className="popup-item custom-transition" onClick={handleCustomTransition}>
+        <span className="popup-icon">🟣</span>
+        Custom Transition
+      </button>
+      
+      <div className="popup-divider" />
       
       <div 
         className="popup-item highlight"

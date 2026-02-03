@@ -122,9 +122,12 @@ export interface AppState {
   setGoToDialogOpen: (open: boolean) => void;
   settingsPanelOpen: boolean;
   setSettingsPanelOpen: (open: boolean) => void;
+  drawingModeActive: boolean;
+  setDrawingModeActive: (active: boolean) => void;
 
   // Theme
-  theme: 'light' | 'dark';
+  theme: 'light' | 'dark' | 'sepia';
+  setTheme: (theme: 'light' | 'dark' | 'sepia') => void;
   toggleTheme: () => void;
 
   // Engine reference
@@ -340,12 +343,19 @@ export const useAppStore = create<AppState>((set, get) => ({
   setGoToDialogOpen: (open) => set({ goToDialogOpen: open }),
   settingsPanelOpen: false,
   setSettingsPanelOpen: (open) => set({ settingsPanelOpen: open }),
+  drawingModeActive: false,
+  setDrawingModeActive: (active) => set({ drawingModeActive: active }),
 
   // Theme
   theme: 'light',
-  toggleTheme: () => set((state) => ({
-    theme: state.theme === 'light' ? 'dark' : 'light'
-  })),
+  setTheme: (theme) => set({ theme }),
+  toggleTheme: () => set((state) => {
+    // Cycle through themes: light -> dark -> sepia -> light
+    const themes: Array<'light' | 'dark' | 'sepia'> = ['light', 'dark', 'sepia'];
+    const currentIndex = themes.indexOf(state.theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    return { theme: themes[nextIndex] };
+  }),
 
   // Search methods
   setSearchQuery: (query) => set((state) => ({

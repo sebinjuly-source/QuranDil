@@ -1,0 +1,138 @@
+.drawing-mode-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: transparent;
+  pointer-events: none;
+}
+
+.drawing-toolbar {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-primary);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px var(--shadow);
+  pointer-events: auto;
+  z-index: 1001;
+}
+
+.toolbar-section {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toolbar-section:last-child {
+  border-bottom: none;
+}
+
+.tool-btn {
+  padding: 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: all 0.2s;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-btn:hover:not(:disabled) {
+  background: var(--hover-bg);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.tool-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.tool-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tool-btn.close-btn {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.tool-btn.close-btn:hover {
+  background: var(--accent-primary-dark);
+}
+
+.color-picker {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--bg-primary);
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 4px;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.drawing-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  pointer-events: auto;
+  z-index: 1000;
+}
+
+.drawing-hint {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow);
+  font-size: 0.9em;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1001;
+}
+
+@media (max-width: 768px) {
+  .drawing-toolbar {
+    right: 10px;
+    top: 50px;
+  }
+  
+  .tool-btn {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 1em;
+  }
+}
