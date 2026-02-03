@@ -61,6 +61,18 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isActive, onClose }) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    // Set stroke properties BEFORE beginning path
+    if (currentTool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 20;
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = currentTool === 'highlighter' ? 10 : 2;
+      ctx.globalAlpha = currentTool === 'highlighter' ? 0.3 : 1;
+    }
+
     ctx.beginPath();
     ctx.moveTo(x, y);
   };
@@ -78,22 +90,20 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isActive, onClose }) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    if (currentTool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 20;
-    } else {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = currentColor;
-      ctx.lineWidth = currentTool === 'highlighter' ? 10 : 2;
-      ctx.globalAlpha = currentTool === 'highlighter' ? 0.3 : 1;
-    }
-
     ctx.lineTo(x, y);
     ctx.stroke();
   };
 
   const stopDrawing = () => {
     if (isDrawing) {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Reset globalAlpha to prevent affecting future draws
+          ctx.globalAlpha = 1;
+        }
+      }
       setIsDrawing(false);
       saveToHistory();
     }

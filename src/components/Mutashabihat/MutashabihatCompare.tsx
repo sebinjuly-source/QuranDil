@@ -30,6 +30,9 @@ const MutashabihatCompare: React.FC<MutashabihatCompareProps> = ({ verse1, verse
     const words1 = text1.split(/\s+/);
     const words2 = text2.split(/\s+/);
     
+    // Convert words2 to Set for O(1) lookups
+    const words2Set = new Set(words2);
+    
     // Simple word-level comparison
     const common: string[] = [];
     const diff1: string[] = [];
@@ -37,15 +40,17 @@ const MutashabihatCompare: React.FC<MutashabihatCompareProps> = ({ verse1, verse
     
     // Find common words
     words1.forEach((word) => {
-      if (words2.includes(word)) {
+      if (words2Set.has(word)) {
         common.push(word);
       } else {
         diff1.push(word);
       }
     });
     
+    // Convert words1 to Set for checking words unique to words2
+    const words1Set = new Set(words1);
     words2.forEach((word) => {
-      if (!words1.includes(word)) {
+      if (!words1Set.has(word)) {
         diff2.push(word);
       }
     });

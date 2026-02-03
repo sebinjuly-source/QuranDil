@@ -3,7 +3,7 @@ import { useAppStore } from '../../state/useAppStore';
 import { surahData } from '../../data/surahData';
 import './LeftPanel.css';
 
-function LeftPanel() {
+const LeftPanel: React.FC = () => {
   const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
   const setLeftPanelOpen = useAppStore((state) => state.setLeftPanelOpen);
   const currentPage = useAppStore((state) => state.navigation.currentPage);
@@ -16,6 +16,10 @@ function LeftPanel() {
   const toggleDualPage = useAppStore((state) => state.toggleDualPage);
   const goBack = useAppStore((state) => state.goBack);
   const history = useAppStore((state) => state.navigation.history);
+  const setSidePaneContent = useAppStore((state) => state.setSidePaneContent);
+  const setActiveFlashcardType = useAppStore((state) => state.setActiveFlashcardType);
+  const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
+  const toggleTheme = useAppStore((state) => state.toggleTheme);
 
   const [pageInput, setPageInput] = useState(currentPage.toString());
   const [ayahInput, setAyahInput] = useState('');
@@ -168,8 +172,8 @@ function LeftPanel() {
               <button 
                 className="deck-btn mistakes"
                 onClick={() => {
-                  useAppStore.getState().setSidePaneContent('flashcards');
-                  useAppStore.getState().setActiveFlashcardType('mistake');
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('mistake');
                 }}
               >
                 🔴 Mistakes
@@ -177,8 +181,8 @@ function LeftPanel() {
               <button 
                 className="deck-btn mutashabihat"
                 onClick={() => {
-                  useAppStore.getState().setSidePaneContent('flashcards');
-                  useAppStore.getState().setActiveFlashcardType('mutashabihat');
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('mutashabihat');
                 }}
               >
                 🟡 Mutashabihat
@@ -186,8 +190,8 @@ function LeftPanel() {
               <button 
                 className="deck-btn transitions"
                 onClick={() => {
-                  useAppStore.getState().setSidePaneContent('flashcards');
-                  useAppStore.getState().setActiveFlashcardType('transition');
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('transition');
                 }}
               >
                 🔵 Transitions
@@ -195,8 +199,8 @@ function LeftPanel() {
               <button 
                 className="deck-btn custom-transitions"
                 onClick={() => {
-                  useAppStore.getState().setSidePaneContent('flashcards');
-                  useAppStore.getState().setActiveFlashcardType('custom-transition');
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('custom-transition');
                 }}
               >
                 🟣 Custom Trans.
@@ -204,8 +208,8 @@ function LeftPanel() {
               <button 
                 className="deck-btn page-numbers"
                 onClick={() => {
-                  useAppStore.getState().setSidePaneContent('flashcards');
-                  useAppStore.getState().setActiveFlashcardType('page-number');
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType('page-number');
                 }}
               >
                 ⚪ Page Numbers
@@ -213,8 +217,8 @@ function LeftPanel() {
               <button 
                 className="deck-btn study-all"
                 onClick={() => {
-                  useAppStore.getState().setSidePaneContent('flashcards');
-                  useAppStore.getState().setActiveFlashcardType(null);
+                  setSidePaneContent('flashcards');
+                  setActiveFlashcardType(null);
                 }}
                 style={{ marginTop: '8px', fontWeight: 'bold' }}
               >
@@ -228,13 +232,13 @@ function LeftPanel() {
             <div className="settings-shortcuts">
               <button 
                 className="setting-btn"
-                onClick={() => useAppStore.getState().setSettingsPanelOpen(true)}
+                onClick={() => setSettingsPanelOpen(true)}
               >
                 ⚙️ Preferences
               </button>
               <button 
                 className="setting-btn"
-                onClick={() => useAppStore.getState().toggleTheme()}
+                onClick={() => toggleTheme()}
               >
                 🎨 Appearance
               </button>
