@@ -88,6 +88,26 @@
   background: var(--bg-primary);
 }
 
+.voice-search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voice-search-btn.listening {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
 .top-bar-right {
   display: flex;
   gap: 0.5rem;

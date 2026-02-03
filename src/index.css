@@ -10,8 +10,11 @@
   --accent-primary-dark: #b91c1c;
   --accent-primary-light: rgba(220, 38, 38, 0.1);
   --accent-secondary: #c19a6b;
+  --accent-color: #dc2626;
+  --accent-color-dark: #b91c1c;
   --border-color: #e5e5e5;
   --shadow: rgba(0, 0, 0, 0.1);
+  --hover-bg: rgba(0, 0, 0, 0.05);
   
   /* Flashcard colors */
   --color-mistake: #ef4444;
@@ -32,8 +35,11 @@
   --accent-primary-dark: #dc2626;
   --accent-primary-light: rgba(239, 68, 68, 0.1);
   --accent-secondary: #d4a373;
+  --accent-color: #ef4444;
+  --accent-color-dark: #dc2626;
   --border-color: #404040;
   --shadow: rgba(0, 0, 0, 0.3);
+  --hover-bg: rgba(255, 255, 255, 0.05);
 }
 
 * {

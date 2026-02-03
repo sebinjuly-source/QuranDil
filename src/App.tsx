@@ -4,6 +4,7 @@ import TopBar from './components/TopBar/TopBar';
 import LeftPanel from './components/LeftPanel/LeftPanel';
 import MushafViewer from './components/MushafViewer/MushafViewer';
 import SidePane from './components/SidePane/SidePane';
+import SearchResults from './components/SearchResults/SearchResults';
 import AudioPlayer from './components/Audio/AudioPlayer';
 import GoToDialog from './components/GoToDialog/GoToDialog';
 import './App.css';
@@ -12,11 +13,13 @@ function App() {
   const theme = useAppStore((state) => state.theme);
   const sidePaneOpen = useAppStore((state) => state.sidePaneOpen);
   const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
+  const searchResultsPaneOpen = useAppStore((state) => state.search.searchResultsPaneOpen);
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
   const setCurrentPage = useAppStore((state) => state.setCurrentPage);
   const toggleFullscreen = useAppStore((state) => state.toggleFullscreen);
   const setGoToDialogOpen = useAppStore((state) => state.setGoToDialogOpen);
+  const setSearchResultsPaneOpen = useAppStore((state) => state.setSearchResultsPaneOpen);
   const goBack = useAppStore((state) => state.goBack);
 
   useEffect(() => {
@@ -72,7 +75,10 @@ function App() {
           }
           break;
         case 'Escape':
-          if (isFullscreen) {
+          if (searchResultsPaneOpen) {
+            e.preventDefault();
+            setSearchResultsPaneOpen(false);
+          } else if (isFullscreen) {
             e.preventDefault();
             toggleFullscreen();
           }
@@ -82,7 +88,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isFullscreen, setCurrentPage, toggleFullscreen, setGoToDialogOpen, goBack]);
+  }, [currentPage, isFullscreen, searchResultsPaneOpen, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, goBack]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -103,7 +109,7 @@ function App() {
     <div className="app">
       <TopBar />
 
-      <main className={`app-main ${sidePaneOpen ? 'with-sidepane' : ''} ${leftPanelOpen ? 'with-leftpanel' : ''}`}>
+      <main className={`app-main ${sidePaneOpen ? 'with-sidepane' : ''} ${leftPanelOpen ? 'with-leftpanel' : ''} ${searchResultsPaneOpen ? 'with-searchpane' : ''}`}>
         <LeftPanel />
         <div className="mushaf-container">
           <MushafViewer />
@@ -111,6 +117,11 @@ function App() {
         {sidePaneOpen && (
           <div className="sidepane-container">
             <SidePane />
+          </div>
+        )}
+        {searchResultsPaneOpen && (
+          <div className="searchpane-container">
+            <SearchResults />
           </div>
         )}
       </main>

@@ -32,13 +32,30 @@
   overflow: hidden;
 }
 
+.searchpane-container {
+  width: 400px;
+  border-left: 1px solid var(--border-color);
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  z-index: 10;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .app-main.with-sidepane .mushaf-container {
     display: none;
   }
 
+  .app-main.with-searchpane .mushaf-container {
+    display: none;
+  }
+
   .sidepane-container {
+    width: 100%;
+  }
+
+  .searchpane-container {
     width: 100%;
   }
 }

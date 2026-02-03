@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { AppEngine } from './AppEngine';
+import { SearchResult } from '../engines/SearchEngine';
 
 export type FlashcardType = 'mistake' | 'mutashabihat' | 'transition' | 'custom-transition' | 'page-number';
 
@@ -42,6 +43,14 @@ export interface NavigationState {
   isFullscreen: boolean;
 }
 
+export interface SearchState {
+  searchQuery: string;
+  searchResults: SearchResult[];
+  searchLoading: boolean;
+  searchResultsPaneOpen: boolean;
+  isListening: boolean;
+}
+
 export interface AppState {
   // Navigation
   navigation: NavigationState;
@@ -53,6 +62,14 @@ export interface AppState {
   goBack: () => void;
   toggleDualPage: () => void;
   toggleFullscreen: () => void;
+
+  // Search
+  search: SearchState;
+  setSearchQuery: (query: string) => void;
+  performSearch: (query: string) => Promise<void>;
+  clearSearch: () => void;
+  setSearchResultsPaneOpen: (open: boolean) => void;
+  setIsListening: (listening: boolean) => void;
 
   // Selection
   selection: SelectionState;
@@ -103,6 +120,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     history: [],
     isDualPage: false,
     isFullscreen: false,
+  },
+  // Search state
+  search: {
+    searchQuery: '',
+    searchResults: [],
+    searchLoading: false,
+    searchResultsPaneOpen: false,
+    isListening: false,
   },
   setCurrentPage: (page, addToHistory = true) => set((state) => {
     const newHistory = addToHistory 
@@ -239,6 +264,67 @@ export const useAppStore = create<AppState>((set, get) => ({
   theme: 'light',
   toggleTheme: () => set((state) => ({
     theme: state.theme === 'light' ? 'dark' : 'light'
+  })),
+
+  // Search methods
+  setSearchQuery: (query) => set((state) => ({
+    search: { ...state.search, searchQuery: query }
+  })),
+  performSearch: async (query) => {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) {
+      set((state) => ({
+        search: { 
+          ...state.search, 
+          searchQuery: '', 
+          searchResults: [], 
+          searchResultsPaneOpen: false 
+        }
+      }));
+      return;
+    }
+
+    set((state) => ({
+      search: { ...state.search, searchLoading: true, searchQuery: trimmedQuery }
+    }));
+
+    try {
+      const { searchEngine } = await import('../engines/SearchEngine');
+      const results = await searchEngine.searchText(trimmedQuery);
+      
+      set((state) => ({
+        search: { 
+          ...state.search, 
+          searchResults: results,
+          searchLoading: false,
+          searchResultsPaneOpen: true
+        }
+      }));
+    } catch (error) {
+      console.error('Search error:', error);
+      set((state) => ({
+        search: { 
+          ...state.search, 
+          searchResults: [],
+          searchLoading: false,
+          searchResultsPaneOpen: false
+        }
+      }));
+    }
+  },
+  clearSearch: () => set((state) => ({
+    search: {
+      ...state.search,
+      searchQuery: '',
+      searchResults: [],
+      searchResultsPaneOpen: false,
+    }
+  })),
+  setSearchResultsPaneOpen: (open) => set((state) => ({
+    search: { ...state.search, searchResultsPaneOpen: open }
+  })),
+  setIsListening: (listening) => set((state) => ({
+    search: { ...state.search, isListening: listening }
   })),
 
   // Engine reference
