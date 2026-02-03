@@ -17,25 +17,31 @@ interface PageData {
 
 const MushafViewer: React.FC<MushafViewerProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvas2Ref = useRef<HTMLCanvasElement>(null);
   const highlightCanvasRef = useRef<HTMLCanvasElement>(null);
   const [pageData, setPageData] = useState<PageData | null>(null);
+  const [pageData2, setPageData2] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [selectedText, setSelectedText] = useState('');
   
   const currentPage = useAppStore((state) => state.navigation.currentPage);
+  const isDualPage = useAppStore((state) => state.navigation.isDualPage);
   const zoom = useAppStore((state) => state.navigation.zoom);
   const engine = useAppStore((state) => state.engine);
   const highlightController = useAppStore((state) => state.audio.highlightController);
 
   useEffect(() => {
     loadPage(currentPage);
-  }, [currentPage]);
+    if (isDualPage && currentPage < 604) {
+      loadPage2(currentPage + 1);
+    }
+  }, [currentPage, isDualPage]);
 
   useEffect(() => {
     if (pageData && canvasRef.current) {
-      renderPage();
+      renderPage(canvasRef.current, pageData, currentPage);
       
       // Sync highlight canvas dimensions with main canvas
       if (highlightCanvasRef.current && canvasRef.current) {
@@ -52,7 +58,11 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
         }
       }
     }
-  }, [pageData, zoom, highlightController]);
+    
+    if (isDualPage && pageData2 && canvas2Ref.current) {
+      renderPage(canvas2Ref.current, pageData2, currentPage + 1);
+    }
+  }, [pageData, pageData2, isDualPage, zoom, highlightController, currentPage]);
 
   const loadPage = async (page: number) => {
     setLoading(true);
@@ -94,9 +104,39 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     }
   };
 
-  const renderPage = () => {
-    const canvas = canvasRef.current;
-    if (!canvas || !pageData) return;
+  const loadPage2 = async (page: number) => {
+    if (page > 604) {
+      setPageData2(null);
+      return;
+    }
+    
+    try {
+      const mushafPage = await engine.mushafRebuilder.rebuildPage(page);
+      const versesWithLines = mushafPage.lines.map(line => {
+        const lineText = line.words
+          .map(w => w.text_uthmani || w.text_imlaei || '')
+          .filter(t => t)
+          .join(' ');
+        
+        const verseKey = line.verse_keys[0] || '1:1';
+        const [surah, ayah] = verseKey.split(':').map(Number);
+        
+        return {
+          surah,
+          ayah,
+          text: lineText,
+          line: line.line_number,
+        };
+      });
+      
+      setPageData2({ verses: versesWithLines });
+    } catch (error) {
+      console.error('Error loading page 2:', error);
+      setPageData2(null);
+    }
+  };
+
+  const renderPage = (canvas: HTMLCanvasElement, data: PageData, pageNum: number) => {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -147,8 +187,8 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     ctx.direction = 'rtl';
 
     // Group verses by line
-    const lineGroups: Map<number, typeof pageData.verses> = new Map();
-    pageData.verses.forEach(verse => {
+    const lineGroups: Map<number, typeof data.verses> = new Map();
+    data.verses.forEach(verse => {
       if (!lineGroups.has(verse.line)) {
         lineGroups.set(verse.line, []);
       }
@@ -179,7 +219,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     
     // Draw ornamental brackets around page number
     const pageNumY = height - margin / 2;
-    ctx.fillText(`﴾ ${currentPage} ﴿`, width / 2, pageNumY);
+    ctx.fillText(`﴾ ${pageNum} ﴿`, width / 2, pageNumY);
 
     ctx.restore();
   };
@@ -191,11 +231,24 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     setShowPopup(true);
   };
 
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Check if there's a text selection
+    const selection = window.getSelection();
+    const selectedText = selection?.toString().trim();
+    
+    if (selectedText && selectedText.length > 0) {
+      // Position popup near the selection
+      setPopupPosition({ x: e.clientX, y: e.clientY });
+      setSelectedText(selectedText);
+      setShowPopup(true);
+    }
+  };
+
   return (
     <div className="mushaf-viewer">
       <NavigationBar />
       
-      <div className="canvas-container">
+      <div className={`canvas-container ${isDualPage ? 'dual-page' : ''}`}>
         {loading && (
           <div className="loading-overlay">
             <div className="spinner"></div>
@@ -207,7 +260,17 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           ref={canvasRef}
           className="mushaf-canvas"
           onDoubleClick={handleCanvasDoubleClick}
+          onMouseUp={handleMouseUp}
         />
+        
+        {isDualPage && currentPage < 604 && (
+          <canvas
+            ref={canvas2Ref}
+            className="mushaf-canvas mushaf-canvas-right"
+            onDoubleClick={handleCanvasDoubleClick}
+            onMouseUp={handleMouseUp}
+          />
+        )}
         
         {/* Highlight overlay canvas */}
         <canvas

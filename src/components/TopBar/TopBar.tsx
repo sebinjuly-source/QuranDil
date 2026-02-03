@@ -6,6 +6,8 @@ function TopBar() {
   const toggleTheme = useAppStore((state) => state.toggleTheme);
   const toggleFullscreen = useAppStore((state) => state.toggleFullscreen);
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
+  const isDualPage = useAppStore((state) => state.navigation.isDualPage);
+  const toggleDualPage = useAppStore((state) => state.toggleDualPage);
   const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
   const setSidePaneContent = useAppStore((state) => state.setSidePaneContent);
   const sidePaneContent = useAppStore((state) => state.sidePaneContent);
@@ -36,6 +38,13 @@ function TopBar() {
             title="Search (Ctrl+F)"
           >
             🔍
+          </button>
+          <button
+            className="top-bar-btn"
+            onClick={toggleDualPage}
+            title={isDualPage ? 'Single page view' : 'Dual page view'}
+          >
+            {isDualPage ? '📄' : '📖'}
           </button>
           <button
             className="top-bar-btn"
