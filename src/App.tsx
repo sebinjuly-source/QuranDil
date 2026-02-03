@@ -8,6 +8,7 @@ import SearchResults from './components/SearchResults/SearchResults';
 import AudioPlayer from './components/Audio/AudioPlayer';
 import GoToDialog from './components/GoToDialog/GoToDialog';
 import SettingsPanel from './components/Settings/SettingsPanel';
+import DrawingCanvas from './components/Drawing/DrawingCanvas';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
   const leftPanelOpen = useAppStore((state) => state.leftPanelOpen);
   const searchResultsPaneOpen = useAppStore((state) => state.search.searchResultsPaneOpen);
   const settingsPanelOpen = useAppStore((state) => state.settingsPanelOpen);
+  const drawingModeActive = useAppStore((state) => state.drawingModeActive);
   const currentPage = useAppStore((state) => state.navigation.currentPage);
   const isFullscreen = useAppStore((state) => state.navigation.isFullscreen);
   const audio = useAppStore((state) => state.audio);
@@ -25,6 +27,7 @@ function App() {
   const setGoToDialogOpen = useAppStore((state) => state.setGoToDialogOpen);
   const setSearchResultsPaneOpen = useAppStore((state) => state.setSearchResultsPaneOpen);
   const setSettingsPanelOpen = useAppStore((state) => state.setSettingsPanelOpen);
+  const setDrawingModeActive = useAppStore((state) => state.setDrawingModeActive);
   const goBack = useAppStore((state) => state.goBack);
 
   useEffect(() => {
@@ -92,8 +95,18 @@ function App() {
             setSettingsPanelOpen(true);
           }
           break;
+        case 'd':
+        case 'D':
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            setDrawingModeActive(!drawingModeActive);
+          }
+          break;
         case 'Escape':
-          if (settingsPanelOpen) {
+          if (drawingModeActive) {
+            e.preventDefault();
+            setDrawingModeActive(false);
+          } else if (settingsPanelOpen) {
             e.preventDefault();
             setSettingsPanelOpen(false);
           } else if (searchResultsPaneOpen) {
@@ -109,7 +122,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isFullscreen, searchResultsPaneOpen, settingsPanelOpen, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, setSettingsPanelOpen, goBack, setAudioPlaying]);
+  }, [currentPage, isFullscreen, searchResultsPaneOpen, settingsPanelOpen, drawingModeActive, audio.isPlaying, audio.currentSurah, audio.currentAyah, setCurrentPage, toggleFullscreen, setGoToDialogOpen, setSearchResultsPaneOpen, setSettingsPanelOpen, setDrawingModeActive, goBack, setAudioPlaying]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -150,6 +163,7 @@ function App() {
       <AudioPlayer />
       <GoToDialog />
       <SettingsPanel isOpen={settingsPanelOpen} onClose={() => setSettingsPanelOpen(false)} />
+      <DrawingCanvas isActive={drawingModeActive} onClose={() => setDrawingModeActive(false)} />
     </div>
   );
 }

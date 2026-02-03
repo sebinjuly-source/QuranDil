@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '../../state/useAppStore';
+import SmartMushafImport from '../Import/SmartMushafImport';
 import './SettingsPanel.css';
 
 interface Settings {
@@ -51,6 +52,7 @@ interface SettingsPanelProps {
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [importWizardOpen, setImportWizardOpen] = useState(false);
   const theme = useAppStore((state) => state.theme);
   const setTheme = useAppStore((state) => state.setTheme);
   const isDualPage = useAppStore((state) => state.navigation.isDualPage);
@@ -302,10 +304,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
           <section className="settings-section">
             <h3>Mushaf</h3>
             <div className="setting-item">
-              <button className="btn btn-secondary" disabled>
+              <button className="btn btn-secondary" onClick={() => setImportWizardOpen(true)}>
                 Change Mushaf...
               </button>
-              <p className="help-text">Coming soon: Switch between different Mushaf styles</p>
+              <p className="help-text">Switch between different Mushaf styles or upload your own PDF</p>
             </div>
           </section>
         </div>
@@ -316,6 +318,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
       </div>
+      
+      <SmartMushafImport isOpen={importWizardOpen} onClose={() => setImportWizardOpen(false)} />
     </>
   );
 };

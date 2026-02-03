@@ -122,6 +122,8 @@ export interface AppState {
   setGoToDialogOpen: (open: boolean) => void;
   settingsPanelOpen: boolean;
   setSettingsPanelOpen: (open: boolean) => void;
+  drawingModeActive: boolean;
+  setDrawingModeActive: (active: boolean) => void;
 
   // Theme
   theme: 'light' | 'dark' | 'sepia';
@@ -341,6 +343,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setGoToDialogOpen: (open) => set({ goToDialogOpen: open }),
   settingsPanelOpen: false,
   setSettingsPanelOpen: (open) => set({ settingsPanelOpen: open }),
+  drawingModeActive: false,
+  setDrawingModeActive: (active) => set({ drawingModeActive: active }),
 
   // Theme
   theme: 'light',
