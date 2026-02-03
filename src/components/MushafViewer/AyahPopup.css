@@ -1,0 +1,71 @@
+.ayah-popup {
+  position: fixed;
+  background: var(--surface);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  animation: popupFadeIn 0.2s ease;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  text-align: left;
+  width: 100%;
+}
+
+.popup-item:hover {
+  background: var(--surface-hover);
+}
+
+.popup-item.transition {
+  color: #3b82f6;
+}
+
+.popup-item.play {
+  color: #10b981;
+}
+
+.popup-item.translation {
+  color: #8b5cf6;
+}
+
+.popup-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+}
+
+.popup-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.25rem 0;
+}

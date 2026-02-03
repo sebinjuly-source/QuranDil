@@ -22,6 +22,16 @@
   transition: transform 0.2s;
 }
 
+.mushaf-canvas.highlight-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 15;
+  background: transparent;
+  box-shadow: none;
+}
+
 .mushaf-canvas:hover {
   box-shadow: 0 6px 30px var(--shadow);
 }

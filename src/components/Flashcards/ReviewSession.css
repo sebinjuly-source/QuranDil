@@ -1,0 +1,188 @@
+.review-session {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  height: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.review-session.empty {
+  justify-content: center;
+  align-items: center;
+}
+
+.review-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.progress-bar {
+  height: 0.5rem;
+  background: var(--surface);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.flashcard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-height: 300px;
+}
+
+.flashcard:not(.revealed):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.flashcard.revealed {
+  cursor: default;
+}
+
+.card-type-badge {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: var(--background);
+  border-radius: 0.5rem;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.flashcard-front,
+.flashcard-back {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-content {
+  font-size: 1.5rem;
+  line-height: 2;
+  text-align: center;
+  color: var(--text-primary);
+  font-family: 'Traditional Arabic', 'Arabic Typesetting', serif;
+}
+
+.card-hint {
+  margin-top: auto;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.card-divider {
+  height: 2px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.rating-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.rating-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rating-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rating-btn.again {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.rating-btn.again:hover {
+  background: #fef2f2;
+}
+
+.rating-btn.hard {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.rating-btn.hard:hover {
+  background: #fffbeb;
+}
+
+.rating-btn.good {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.rating-btn.good:hover {
+  background: #f0fdf4;
+}
+
+.rating-btn.easy {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.rating-btn.easy:hover {
+  background: #eff6ff;
+}
+
+.rating-label {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.rating-number {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.review-hint {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .rating-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .card-content {
+    font-size: 1.25rem;
+  }
+}
