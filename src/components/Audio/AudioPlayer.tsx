@@ -205,7 +205,7 @@ const AudioPlayer: React.FC = () => {
   };
 
   const handleRepeatModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRepeatMode(e.target.value as any);
+    setRepeatMode(e.target.value as 'off' | 'verse' | 'page' | 'range');
   };
 
   const handleGapChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -222,7 +222,7 @@ const AudioPlayer: React.FC = () => {
 
   const handleClose = () => {
     setAudioPlaying(false);
-    setAudioAyah(0, 0);
+    setAudioAyah(null, null);
   };
 
   // Drag handlers

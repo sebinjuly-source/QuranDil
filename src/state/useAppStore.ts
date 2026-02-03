@@ -88,7 +88,7 @@ export interface AppState {
   audio: AudioState;
   setAudioPlaying: (playing: boolean) => void;
   setAudioReciter: (reciter: string) => void;
-  setAudioAyah: (surah: number, ayah: number, page?: number) => void;
+  setAudioAyah: (surah: number | null, ayah: number | null, page?: number | null) => void;
   setVolume: (volume: number) => void;
   setPlaybackSpeed: (speed: number) => void;
   setRepeatMode: (mode: RepeatMode) => void;
@@ -229,7 +229,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     playbackSpeed: 1,
     repeatMode: 'off',
     gapDuration: 1,
-    playerPosition: { x: window.innerWidth - 400, y: window.innerHeight - 200 },
+    playerPosition: { x: window.innerWidth - 380 - 20, y: window.innerHeight - 180 - 20 },
     playerMinimized: false,
     isLoading: false,
     currentPage: null,
