@@ -1,0 +1,28 @@
+{
+  "name": "qurandil",
+  "version": "1.0.0",
+  "description": "Quran Hifz App for people memorizing or memorized the Quran to map their weaknesses into flashcards, use direct pictographic memory of their own Mushaf to revise weak points",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["quran", "hifz", "memorization", "spaced-repetition", "pwa"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.2.0",
+    "workbox-window": "^7.4.0"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "zustand": "^5.0.11"
+  }
+}
