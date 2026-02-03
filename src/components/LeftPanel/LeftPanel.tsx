@@ -163,27 +163,81 @@ function LeftPanel() {
           </section>
 
           <section className="panel-section">
-            <h3 className="section-title">Audio Player</h3>
-            <div className="audio-preview">
-              <p className="text-muted">Audio controls preview</p>
-            </div>
-          </section>
-
-          <section className="panel-section">
             <h3 className="section-title">Flashcard Decks</h3>
             <div className="flashcard-list">
-              <button className="deck-btn">Mistakes</button>
-              <button className="deck-btn">Mutashabihat</button>
-              <button className="deck-btn">Transitions</button>
+              <button 
+                className="deck-btn mistakes"
+                onClick={() => {
+                  useAppStore.getState().setSidePaneContent('flashcards');
+                  useAppStore.getState().setActiveFlashcardType('mistake');
+                }}
+              >
+                🔴 Mistakes
+              </button>
+              <button 
+                className="deck-btn mutashabihat"
+                onClick={() => {
+                  useAppStore.getState().setSidePaneContent('flashcards');
+                  useAppStore.getState().setActiveFlashcardType('mutashabihat');
+                }}
+              >
+                🟡 Mutashabihat
+              </button>
+              <button 
+                className="deck-btn transitions"
+                onClick={() => {
+                  useAppStore.getState().setSidePaneContent('flashcards');
+                  useAppStore.getState().setActiveFlashcardType('transition');
+                }}
+              >
+                🔵 Transitions
+              </button>
+              <button 
+                className="deck-btn custom-transitions"
+                onClick={() => {
+                  useAppStore.getState().setSidePaneContent('flashcards');
+                  useAppStore.getState().setActiveFlashcardType('custom-transition');
+                }}
+              >
+                🟣 Custom Trans.
+              </button>
+              <button 
+                className="deck-btn page-numbers"
+                onClick={() => {
+                  useAppStore.getState().setSidePaneContent('flashcards');
+                  useAppStore.getState().setActiveFlashcardType('page-number');
+                }}
+              >
+                ⚪ Page Numbers
+              </button>
+              <button 
+                className="deck-btn study-all"
+                onClick={() => {
+                  useAppStore.getState().setSidePaneContent('flashcards');
+                  useAppStore.getState().setActiveFlashcardType(null);
+                }}
+                style={{ marginTop: '8px', fontWeight: 'bold' }}
+              >
+                📚 Study All
+              </button>
             </div>
           </section>
 
           <section className="panel-section">
             <h3 className="section-title">Quick Settings</h3>
             <div className="settings-shortcuts">
-              <button className="setting-btn">⚙️ Preferences</button>
-              <button className="setting-btn">🎨 Appearance</button>
-              <button className="setting-btn">🔊 Audio</button>
+              <button 
+                className="setting-btn"
+                onClick={() => useAppStore.getState().setSettingsPanelOpen(true)}
+              >
+                ⚙️ Preferences
+              </button>
+              <button 
+                className="setting-btn"
+                onClick={() => useAppStore.getState().toggleTheme()}
+              >
+                🎨 Appearance
+              </button>
             </div>
           </section>
         </div>

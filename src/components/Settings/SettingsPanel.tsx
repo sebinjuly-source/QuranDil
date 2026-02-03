@@ -4,7 +4,7 @@ import './SettingsPanel.css';
 
 interface Settings {
   display: {
-    theme: 'light' | 'dark';
+    theme: 'light' | 'dark' | 'sepia';
     pageView: 'single' | 'dual';
     fontSize: 'small' | 'medium' | 'large';
   };
@@ -52,7 +52,7 @@ interface SettingsPanelProps {
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const theme = useAppStore((state) => state.theme);
-  const toggleTheme = useAppStore((state) => state.toggleTheme);
+  const setTheme = useAppStore((state) => state.setTheme);
   const isDualPage = useAppStore((state) => state.navigation.isDualPage);
   const toggleDualPage = useAppStore((state) => state.toggleDualPage);
   const setAudioReciter = useAppStore((state) => state.setAudioReciter);
@@ -92,14 +92,14 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
     localStorage.setItem('qurandil-settings', JSON.stringify(newSettings));
   };
 
-  const handleThemeChange = (newTheme: 'light' | 'dark') => {
+  const handleThemeChange = (newTheme: 'light' | 'dark' | 'sepia') => {
     const newSettings = {
       ...settings,
       display: { ...settings.display, theme: newTheme },
     };
     saveSettings(newSettings);
     if (theme !== newTheme) {
-      toggleTheme();
+      setTheme(newTheme);
     }
   };
 
@@ -162,7 +162,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
   const handleResetToDefaults = () => {
     if (confirm('Reset all settings to defaults?')) {
       saveSettings(defaultSettings);
-      if (theme !== defaultSettings.display.theme) toggleTheme();
+      setTheme(defaultSettings.display.theme);
       if ((defaultSettings.display.pageView === 'dual') !== isDualPage) toggleDualPage();
       setAudioReciter(defaultSettings.audio.defaultReciter);
       setGapDuration(defaultSettings.audio.gapBetweenVerses);
@@ -187,10 +187,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
               <label>Theme</label>
               <select 
                 value={settings.display.theme}
-                onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark')}
+                onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark' | 'sepia')}
               >
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
+                <option value="sepia">Sepia</option>
               </select>
             </div>
 

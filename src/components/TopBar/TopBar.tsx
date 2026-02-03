@@ -198,7 +198,7 @@ function TopBar() {
             onClick={toggleTheme}
             title="Toggle theme"
           >
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === 'light' ? '🌙' : theme === 'dark' ? '☀️' : '📖'}
           </button>
         </div>
       </div>

@@ -42,6 +42,24 @@
   --hover-bg: rgba(255, 255, 255, 0.05);
 }
 
+[data-theme="sepia"] {
+  --bg-primary: #f4ecd8;
+  --bg-secondary: #f9f5e8;
+  --bg-glass: rgba(249, 245, 232, 0.7);
+  --text-primary: #5d4e37;
+  --text-secondary: #8b7355;
+  --text-tertiary: #a0927d;
+  --accent-primary: #b8860b;
+  --accent-primary-dark: #9a7609;
+  --accent-primary-light: rgba(184, 134, 11, 0.1);
+  --accent-secondary: #c19a6b;
+  --accent-color: #b8860b;
+  --accent-color-dark: #9a7609;
+  --border-color: #d4c4a8;
+  --shadow: rgba(93, 78, 55, 0.1);
+  --hover-bg: rgba(93, 78, 55, 0.05);
+}
+
 * {
   margin: 0;
   padding: 0;
