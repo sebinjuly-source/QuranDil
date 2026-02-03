@@ -185,6 +185,7 @@ const AudioPlayer: React.FC = () => {
     if (!audioElement || !audio.highlightController) return;
 
     const handlePlay = () => {
+      // TODO: Pass canvas ref directly via props instead of DOM query (more robust)
       // Find highlight canvas in DOM
       const highlightCanvas = document.querySelector('.highlight-overlay') as HTMLCanvasElement;
       if (highlightCanvas && audio.highlightController) {

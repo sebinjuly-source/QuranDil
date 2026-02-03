@@ -32,6 +32,7 @@ export async function loadWordTimestamps(
     
     // Process each word
     verse.words.forEach((word: QWord) => {
+      // TODO: Replace estimation with actual audio timing data from API (Phase 4.1)
       // Estimate word duration (will be replaced with actual audio duration in production)
       // For now, use a simple heuristic: ~0.3 seconds per word
       const duration = estimateWordDuration(word);

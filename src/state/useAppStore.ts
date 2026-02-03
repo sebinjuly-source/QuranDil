@@ -250,9 +250,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   setAudioReciter: (reciter) => set((state) => ({
     audio: { ...state.audio, currentReciter: reciter }
   })),
-  setAudioAyah: (surah, ayah, page) => set((state) => ({
-    audio: { ...state.audio, currentSurah: surah, currentAyah: ayah, currentPage: page ?? state.audio.currentPage }
-  })),
+  setAudioAyah: (surah, ayah, page) => set((state) => {
+    // Handle null cases explicitly to avoid inconsistent state
+    if (surah === null || ayah === null) {
+      return {
+        audio: { ...state.audio, currentSurah: null, currentAyah: null, currentPage: null }
+      };
+    }
+    return {
+      audio: { ...state.audio, currentSurah: surah, currentAyah: ayah, currentPage: page ?? state.audio.currentPage }
+    };
+  }),
   setVolume: (volume) => set((state) => ({
     audio: { ...state.audio, volume: Math.max(0, Math.min(1, volume)) }
   })),
