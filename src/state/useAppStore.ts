@@ -7,6 +7,7 @@ import { AppEngine } from './AppEngine';
 import { SearchResult } from '../engines/SearchEngine';
 import { RepeatMode, AudioPosition } from '../utils/audioUtils';
 import { AudioWordHighlightController, WordTimestamp } from '../engines/AudioWordHighlightController';
+import { getSurahForPage, getJuzForPage, getPageForSurah, getPageForJuz, TOTAL_QURAN_PAGES } from '../data/quranMetadata';
 
 export type FlashcardType = 'mistake' | 'mutashabihat' | 'transition' | 'custom-transition' | 'page-number';
 
@@ -54,6 +55,7 @@ export interface NavigationState {
   futureHistory: number[];
   isDualPage: boolean;
   isFullscreen: boolean;
+  hifzMode: boolean;
 }
 
 export interface SearchState {
@@ -76,6 +78,7 @@ export interface AppState {
   goForward: () => void;
   toggleDualPage: () => void;
   toggleFullscreen: () => void;
+  toggleHifzMode: () => void;
 
   // Search
   search: SearchState;
@@ -140,8 +143,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Navigation state
   navigation: {
     currentPage: 1,
-    currentSurah: null,
-    currentJuz: null,
+    currentSurah: 1, // Al-Fatihah
+    currentJuz: 1,
     zoom: 1,
     panX: 0,
     panY: 0,
@@ -149,6 +152,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     futureHistory: [],
     isDualPage: false,
     isFullscreen: false,
+    hifzMode: false,
   },
   // Search state
   search: {
@@ -159,7 +163,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     isListening: false,
   },
   setCurrentPage: (page, addToHistory = true) => set((state) => {
-    const newPage = Math.max(1, Math.min(604, page));
+    const newPage = Math.max(1, Math.min(TOTAL_QURAN_PAGES, page));
     // Only add to history if actually changing pages
     const newHistory = (addToHistory && state.navigation.currentPage !== newPage)
       ? [...state.navigation.history, state.navigation.currentPage].slice(-10)
@@ -168,21 +172,53 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Clear future history when navigating to a new page
     const clearFuture = addToHistory && state.navigation.currentPage !== newPage;
     
+    // Sync Surah and Juz based on the new page
+    const newSurah = getSurahForPage(newPage);
+    const newJuz = getJuzForPage(newPage);
+    
     return {
       navigation: { 
         ...state.navigation, 
         currentPage: newPage,
+        currentSurah: newSurah,
+        currentJuz: newJuz,
         history: newHistory,
         futureHistory: clearFuture ? [] : state.navigation.futureHistory
       }
     };
   }),
-  setCurrentSurah: (surah) => set((state) => ({
-    navigation: { ...state.navigation, currentSurah: surah }
-  })),
-  setCurrentJuz: (juz) => set((state) => ({
-    navigation: { ...state.navigation, currentJuz: juz }
-  })),
+  setCurrentSurah: (surah) => set((state) => {
+    // Navigate to the starting page of the surah
+    const newPage = getPageForSurah(surah);
+    const newJuz = getJuzForPage(newPage);
+    
+    return {
+      navigation: { 
+        ...state.navigation, 
+        currentPage: newPage,
+        currentSurah: surah,
+        currentJuz: newJuz,
+        history: [...state.navigation.history, state.navigation.currentPage].slice(-10),
+        futureHistory: []
+      }
+    };
+  }),
+  setCurrentJuz: (juz) => set((state) => {
+    // Navigate to the starting page of the juz
+    const newPage = getPageForJuz(juz);
+    const newSurah = getSurahForPage(newPage);
+    
+    return {
+      navigation: { 
+        ...state.navigation, 
+        currentPage: newPage,
+        currentSurah: newSurah,
+        currentJuz: juz,
+        history: [...state.navigation.history, state.navigation.currentPage].slice(-10),
+        futureHistory: []
+      }
+    };
+  }),
   setZoom: (zoom) => set((state) => ({
     navigation: { ...state.navigation, zoom: Math.max(0.5, Math.min(3, zoom)) }
   })),
@@ -235,6 +271,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       navigation: { ...state.navigation, isFullscreen: newFullscreen }
     };
   }),
+  toggleHifzMode: () => set((state) => ({
+    navigation: { ...state.navigation, hifzMode: !state.navigation.hifzMode }
+  })),
 
   // Selection state
   selection: {
@@ -363,7 +402,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   sidePaneContent: null,
   setSidePaneOpen: (open) => set({ sidePaneOpen: open }),
   setSidePaneContent: (content) => set({ sidePaneContent: content, sidePaneOpen: content !== null }),
-  leftPanelOpen: true,
+  leftPanelOpen: false,
   setLeftPanelOpen: (open) => set({ leftPanelOpen: open }),
   goToDialogOpen: false,
   setGoToDialogOpen: (open) => set({ goToDialogOpen: open }),

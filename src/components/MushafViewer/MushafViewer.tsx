@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../state/useAppStore';
 import SelectionPopup from './SelectionPopup';
-import ZoomControl from './NavigationBar';
+import NavigationBar from './NavigationBar';
+import { TOTAL_QURAN_PAGES } from '../../data/quranMetadata';
 import './MushafViewer.css';
 
 interface MushafViewerProps {}
@@ -17,25 +18,32 @@ interface PageData {
 
 const MushafViewer: React.FC<MushafViewerProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvas2Ref = useRef<HTMLCanvasElement>(null);
   const highlightCanvasRef = useRef<HTMLCanvasElement>(null);
   const [pageData, setPageData] = useState<PageData | null>(null);
+  const [pageData2, setPageData2] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [selectedText, setSelectedText] = useState('');
   
   const currentPage = useAppStore((state) => state.navigation.currentPage);
+  const isDualPage = useAppStore((state) => state.navigation.isDualPage);
+  const hifzMode = useAppStore((state) => state.navigation.hifzMode);
   const zoom = useAppStore((state) => state.navigation.zoom);
   const engine = useAppStore((state) => state.engine);
   const highlightController = useAppStore((state) => state.audio.highlightController);
 
   useEffect(() => {
     loadPage(currentPage);
-  }, [currentPage]);
+    if (isDualPage && currentPage < TOTAL_QURAN_PAGES) {
+      loadPage2(currentPage + 1);
+    }
+  }, [currentPage, isDualPage]);
 
   useEffect(() => {
     if (pageData && canvasRef.current) {
-      renderPage();
+      renderPage(canvasRef.current, pageData, currentPage);
       
       // Sync highlight canvas dimensions with main canvas
       if (highlightCanvasRef.current && canvasRef.current) {
@@ -52,7 +60,11 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
         }
       }
     }
-  }, [pageData, zoom, highlightController]);
+    
+    if (isDualPage && pageData2 && canvas2Ref.current) {
+      renderPage(canvas2Ref.current, pageData2, currentPage + 1);
+    }
+  }, [pageData, pageData2, isDualPage, zoom, highlightController, currentPage, hifzMode]);
 
   const loadPage = async (page: number) => {
     setLoading(true);
@@ -94,9 +106,39 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     }
   };
 
-  const renderPage = () => {
-    const canvas = canvasRef.current;
-    if (!canvas || !pageData) return;
+  const loadPage2 = async (page: number) => {
+    if (page > TOTAL_QURAN_PAGES) {
+      setPageData2(null);
+      return;
+    }
+    
+    try {
+      const mushafPage = await engine.mushafRebuilder.rebuildPage(page);
+      const versesWithLines = mushafPage.lines.map(line => {
+        const lineText = line.words
+          .map(w => w.text_uthmani || w.text_imlaei || '')
+          .filter(t => t)
+          .join(' ');
+        
+        const verseKey = line.verse_keys[0] || '1:1';
+        const [surah, ayah] = verseKey.split(':').map(Number);
+        
+        return {
+          surah,
+          ayah,
+          text: lineText,
+          line: line.line_number,
+        };
+      });
+      
+      setPageData2({ verses: versesWithLines });
+    } catch (error) {
+      console.error('Error loading page 2:', error);
+      setPageData2(null);
+    }
+  };
+
+  const renderPage = (canvas: HTMLCanvasElement, data: PageData, pageNum: number) => {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -142,13 +184,13 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
 
     // Configure Arabic text rendering
     ctx.font = '24px "Scheherazade New", "Amiri", "Traditional Arabic", serif';
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = hifzMode ? 'rgba(26, 26, 26, 0.1)' : '#1a1a1a';
     ctx.textAlign = 'right';
     ctx.direction = 'rtl';
 
     // Group verses by line
-    const lineGroups: Map<number, typeof pageData.verses> = new Map();
-    pageData.verses.forEach(verse => {
+    const lineGroups: Map<number, typeof data.verses> = new Map();
+    data.verses.forEach(verse => {
       if (!lineGroups.has(verse.line)) {
         lineGroups.set(verse.line, []);
       }
@@ -166,9 +208,16 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
       // Combine all text for this line
       const lineText = verses.map(v => v.text).join(' ');
       
-      // Draw the line text
+      // Draw the line text (blurred in hifz mode)
       if (lineText) {
-        ctx.fillText(lineText, startX, y);
+        if (hifzMode) {
+          // Add blur effect for hifz mode
+          ctx.filter = 'blur(8px)';
+          ctx.fillText(lineText, startX, y);
+          ctx.filter = 'none';
+        } else {
+          ctx.fillText(lineText, startX, y);
+        }
       }
     });
 
@@ -179,7 +228,7 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     
     // Draw ornamental brackets around page number
     const pageNumY = height - margin / 2;
-    ctx.fillText(`﴾ ${currentPage} ﴿`, width / 2, pageNumY);
+    ctx.fillText(`﴾ ${pageNum} ﴿`, width / 2, pageNumY);
 
     ctx.restore();
   };
@@ -191,9 +240,24 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
     setShowPopup(true);
   };
 
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Check if there's a text selection
+    const selection = window.getSelection();
+    const selectedText = selection?.toString().trim();
+    
+    if (selectedText && selectedText.length > 0) {
+      // Position popup near the selection
+      setPopupPosition({ x: e.clientX, y: e.clientY });
+      setSelectedText(selectedText);
+      setShowPopup(true);
+    }
+  };
+
   return (
     <div className="mushaf-viewer">
-      <div className="canvas-container">
+      <NavigationBar />
+      
+      <div className={`canvas-container ${isDualPage ? 'dual-page' : ''}`}>
         {loading && (
           <div className="loading-overlay">
             <div className="spinner"></div>
@@ -205,7 +269,17 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           ref={canvasRef}
           className="mushaf-canvas"
           onDoubleClick={handleCanvasDoubleClick}
+          onMouseUp={handleMouseUp}
         />
+        
+        {isDualPage && currentPage < TOTAL_QURAN_PAGES && (
+          <canvas
+            ref={canvas2Ref}
+            className="mushaf-canvas mushaf-canvas-right"
+            onDoubleClick={handleCanvasDoubleClick}
+            onMouseUp={handleMouseUp}
+          />
+        )}
         
         {/* Highlight overlay canvas */}
         <canvas
@@ -219,8 +293,6 @@ const MushafViewer: React.FC<MushafViewerProps> = () => {
           }}
         />
       </div>
-
-      <ZoomControl />
 
       {showPopup && (
         <SelectionPopup

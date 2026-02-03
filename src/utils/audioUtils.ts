@@ -10,9 +10,12 @@ export interface Reciter {
 
 export const RECITERS: Reciter[] = [
   { id: 'ar.alafasy', name: 'Mishary Rashid Alafasy', style: 'Hafs' },
-  { id: 'ar.abdurrahmanalsudais', name: 'Abdurrahman Al-Sudais', style: 'Hafs' },
-  { id: 'ar.abdulbasit', name: 'Abdul Basit', style: 'Murattal' },
+  { id: 'ar.abdurrahmanalsudais', name: 'Abdurrahman As-Sudais', style: 'Hafs' },
+  { id: 'ar.abdulbasit', name: 'Abdul Basit Abdul Samad', style: 'Murattal' },
   { id: 'ar.saadalghamadi', name: 'Saad Al-Ghamdi', style: 'Hafs' },
+  { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary', style: 'Hafs' },
+  { id: 'ar.minshawi', name: 'Mohamed Siddiq Al-Minshawi', style: 'Murattal' },
+  { id: 'ar.shaatree', name: 'Abu Bakr Al-Shatri', style: 'Hafs' },
 ];
 
 export const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];

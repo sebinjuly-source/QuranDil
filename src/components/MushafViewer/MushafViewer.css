@@ -11,15 +11,24 @@
   align-items: center;
   justify-content: center;
   overflow: auto;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
+}
+
+.canvas-container.dual-page {
+  gap: 1.5rem;
+}
+
+.mushaf-canvas.mushaf-canvas-right {
+  margin-left: 1rem;
 }
 
 .mushaf-canvas {
   border-radius: 8px;
   box-shadow: 0 4px 20px var(--shadow);
-  cursor: crosshair;
+  cursor: text;
   transition: transform 0.2s;
+  user-select: text;
 }
 
 .mushaf-canvas.highlight-overlay {
